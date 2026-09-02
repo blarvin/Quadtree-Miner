@@ -6,9 +6,15 @@
 ## exactly the same thing and are numerically identical at the root.
 class_name Atoms
 
-## Screen pixels per atom. A size-16 standard block is therefore 64px --
-## the baseline the GDD 6 legibility test is written against. Tunable.
-const PX: int = 4
+## FRAMEBUFFER pixels per atom, inside the 640x360 render target. The window
+## integer-scales that to the display, so on a 1080p panel (3x) one atom is
+## 9 physical px and a size-16 standard block is 144.
+##
+## 3 was chosen by eye against the GDD 6 legibility sheet at true game scale
+## (art/legibility/, run legibility_view.tscn and press 3). Every subdivision
+## of a standard block stays a whole number of pixels -- 48, 24, 12, 6, 3 --
+## so there are no half-pixel seams at any depth.
+const PX: int = 3
 
 const ATOM: int = 1
 const STANDARD_BLOCK: int = 16

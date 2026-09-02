@@ -57,10 +57,30 @@ There is **no separate attack input, no aim, no tool-placement UI.** Direction i
 |---|---|
 | **Character** | 8 atoms tall. Walks left/right. |
 | **No jump** | Deliberate. Vertical movement is earned, not free. |
-| **Up** | **Ladders only** — placed, consumable, cost resources, occupy inventory (§3). Ladders are the *only* way up. |
+| **Up** | **Ladders only** — placed, consumable, cost resources, occupy inventory (§3). Ladders are the *only* way up. See §3.1.1. |
 | **Down** | **Dig or fall.** Descent is cheap; ascent is the expensive, planned half of every trip. |
 | **Falling** | Free and instant. Combined with air (§3), this is the core tension: down is a one-way door until you spend on ladders. |
 | **All digging** | Impact-point scan (§4.3.2) spans the character's cross-section perpendicular to the dig axis — height when digging sideways, width when digging up or down. Tunnels are always walkable; shafts are always enterable. |
+
+#### 3.1.1 Ladder units
+
+**One ladder unit is 8 atoms tall — exactly the character's height.** The
+player climbs a unit and stands at its top, so one unit buys exactly one
+character-height of ascent. This is the unit of the ascent economy: "how many
+ladders deep am I" and "how many character-heights from the surface" are the
+same number, and the player can do that arithmetic without counting atoms.
+
+| | |
+|---|---|
+| **Height** | 8 atoms — one character-height (§3). |
+| **Width** | 8 atoms — the character's cross-section, so a self-dug shaft always fits one. |
+| **Climb reach** | The player can climb to the **top** of a unit, ending stood on its topmost atom. Stacked units are therefore continuous. |
+| **Placement** | **Into void only** (§4.1.1). A ladder cannot be placed inside a block — dig first, then place. Placement is what turns a dug shaft into a route. |
+| **Recovery** | **Not recoverable in Phase 0.** A placed ladder is spent. Retrieval would make ascent refundable and defeat the commitment pillar (§1). Reclaiming ladders is a Phase-1 economy question — see §7. |
+
+Ladders are **not** blocks and have no quadtree — they are placed entities on
+the atom grid, like `MinedUnit` (§5.1). They do not obstruct digging and are
+not damaged by it.
 
 **Why no jump:** the air clock (§3) only bites if the return trip is a real cost. A jump would make shallow ascents free and collapse the risk of descending "just a bit further." Ladders-only makes every metre of depth a resource decision.
 
@@ -678,6 +698,7 @@ This is twenty minutes of graphics work and it **bounds the entire design space*
 - **Do not let `drop.size` yield more mass than the node held.** `drop.size < 1` or counts exceeding `(node.size / drop.size)²` would mean mining fine yields more material — an exploit, not a mechanic. If a satisfying spray of debris is wanted, that is a **particle effect**: cosmetic, uncountable, never inventory.
 - Surgical single-atom mining via `on_break: subdivide` overrides (e.g. picking around a gem — §4.5).
 - **Layout patterns (geodes, rings, hollow cores) — already expressible; do NOT add a `layout_template` field.** Which sub-units *exist* is emergent from rules the model already has: a `resistance: 0, on_break: mine, drop: none` override breaks on materialisation and yields nothing — i.e. a hole. A geode is a hard shell + hollow interior + gem core, written as three overrides on one template (§4.7.1). This is strictly more expressive than a separate layout system (per-node, not per-pattern) and costs no new structure. What *is* worth building later: a **layout authoring tool** — the value is in the editing gesture, not in new runtime data.
+- **Ladder recovery** — reclaiming a placed ladder unit (§3.1.1). Deliberately absent in Phase 0: refundable ascent weakens the commitment pillar (§1). If it arrives, it should cost something (time, or a partial return), not be free.
 - Waste-on-overmine (mining past a resource's drop size destroys it).
 - Extra/earnable lives softening perma-death.
 - Heat as a second chasing factor.
