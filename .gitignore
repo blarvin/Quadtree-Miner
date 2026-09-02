@@ -1,0 +1,39 @@
+# Godot 4+
+.godot/
+
+# Godot 3
+.import/
+
+# Android build (Godot 4 export template / gradle)
+/android/
+
+# Exports / local build output
+export.cfg
+export_presets.cfg
+/exports/
+/build/
+*.apk
+*.aab
+*.ipa
+*.exe
+*.pck
+*.zip
+
+# Imported translations (generated from CSV)
+*.translation
+
+# Godot C# / Mono
+.mono/
+data_*/
+mono_crash.*.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
