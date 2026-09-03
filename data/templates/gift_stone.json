@@ -1,7 +1,5 @@
 {
-  "_": "THE GIFT (GDD 6). A coal core two levels down that fracturing exposes BEFORE it can be reached. You can see the coal and must work for it.",
-  "_one_line": "The core is ONE override. It changes only the drop -- so at size 4 the core behaves exactly like its siblings and is revealed along with them (GDD 4.6.4), and its coal only materialises at size 2 where the terminal rule fires.",
-  "_contrast": "Contrast the hidden core of GDD 4.6.3, which is TERMINAL: it never subdivides, so no fracture can ever depict its interior. That one you can tell is there and cannot identify. This one you can read.",
+  "_": "The gift (GDD 6). Stone with a coal core at Q1.Q2 (size 4). The core changes only the drop, so it subdivides like its siblings and fracturing shows it before it can be reached.",
   "material": "stone",
   "display_skin": "stone_rough",
   "default_rule": { "resistance": 2, "on_break": "subdivide", "drop": null },

@@ -1,32 +1,13 @@
-## Persisting the world. GDD 5.1, 5.2, 4.6.1.
-##
-## PERSISTED FORM IS NOT RUNTIME FORM. The save stores the minimum truth and
-## the runtime caches what it can derive:
-##
-##   NOT SAVED  BlockNode.size  -- implicit in nesting depth, recomputed on
-##                                 load as BlockInstance.size >> depth.
-##                                 An unstorable value cannot be an invalid one.
-##   NOT SAVED  rules           -- read from the template by path, always
-##                                 (4.7.2). Retuning a material therefore
-##                                 changes a saved world's behaviour, which is
-##                                 the accepted trade-off while the whole point
-##                                 is experimenting toward good blocks.
-##   SAVED      damage, revealed, and the SHAPE of the tree -- world state,
-##                                 not decoration (4.6.1, invariant 7).
-##
-## An untouched block is one node, so it saves as `{}`. That is what makes the
-## persistence of 4.6.1 cheap: the saved tree is only ever as deep as the
-## player has actually dug.
+## Persisting the world (GDD 5.1, 4.6.1). Saves damage, revealed, and the
+## tree's shape. Node size is not saved (derived from depth); rules are not
+## saved (read from the template). An untouched node saves as {}.
 class_name WorldSave
 
 const VERSION: int = 1
 
-## Node keys are terse because there are a lot of them: d(amage), r(evealed),
-## c(hildren). A null entry in `c` is a MINED quadrant; a missing `c` is a node
-## that never subdivided. Two different facts, and JSON keeps them apart.
 const K_DAMAGE: String = "d"
 const K_REVEALED: String = "r"
-const K_CHILDREN: String = "c"
+const K_CHILDREN: String = "c"  ## null entry = mined quadrant; absent = never subdivided
 
 static func to_dict(world: World) -> Dictionary:
 	var out: Array = []
@@ -37,17 +18,12 @@ static func to_dict(world: World) -> Dictionary:
 			"template": b.template_id,
 			"root": _node_to(b.root),
 		})
-	return {
-		"version": VERSION,
-		"extent": [world.extent.x, world.extent.y],
-		"blocks": out,
-	}
+	return {"version": VERSION, "extent": [world.extent.x, world.extent.y], "blocks": out}
 
 static func to_json(world: World) -> String:
 	return JSON.stringify(to_dict(world), "  ")
 
-static func from_dict(src: Dictionary, templates: Dictionary,
-		errors: PackedStringArray) -> World:
+static func from_dict(src: Dictionary, templates: Dictionary, errors: PackedStringArray) -> World:
 	var world := World.new()
 	world.templates = templates
 
@@ -78,14 +54,12 @@ static func from_dict(src: Dictionary, templates: Dictionary,
 			errors.append("block at %s wants unknown template '%s'" % [origin, template_id])
 			continue
 		var root: BlockNode = _node_from(b.get("root", {}), size)
-		world.add(BlockInstance.new(
-			Vector2i(int(origin[0]), int(origin[1])), size, template_id, root))
+		world.add(BlockInstance.new(Vector2i(int(origin[0]), int(origin[1])), size, template_id, root))
 	return world
 
-static func from_json(text: String, templates: Dictionary,
-		errors: PackedStringArray) -> World:
+static func from_json(text: String, templates: Dictionary, errors: PackedStringArray) -> World:
 	var parsed: Variant = JSON.parse_string(text)
-	if parsed == null or typeof(parsed) != TYPE_DICTIONARY:
+	if typeof(parsed) != TYPE_DICTIONARY:
 		errors.append("save is not a JSON object")
 		return World.new()
 	return from_dict(parsed, templates, errors)
@@ -98,17 +72,12 @@ static func save_to_file(world: World, path: String) -> bool:
 	f.store_string(to_json(world))
 	return true
 
-static func load_from_file(path: String, templates: Dictionary,
-		errors: PackedStringArray) -> World:
+static func load_from_file(path: String, templates: Dictionary, errors: PackedStringArray) -> World:
 	if not FileAccess.file_exists(path):
 		errors.append("%s: no such file" % path)
 		return World.new()
 	return from_json(FileAccess.get_file_as_string(path), templates, errors)
 
-# --------------------------------------------------------------------------
-
-## Defaults are omitted, so an untouched node is `{}`. NOTE WHAT IS ABSENT:
-## `size`. It is derived on the way back in.
 static func _node_to(node: BlockNode) -> Dictionary:
 	var out: Dictionary = {}
 	if node.damage != 0.0:
@@ -122,8 +91,7 @@ static func _node_to(node: BlockNode) -> Dictionary:
 		out[K_CHILDREN] = kids
 	return out
 
-## `size` is passed DOWN, never read from the file -- this and BlockNode's
-## constructor via subdivide() are its only two writers (GDD 5.2, invariant 11).
+## `size` is passed down, never read from the file (GDD 5.2).
 static func _node_from(src: Variant, size: int) -> BlockNode:
 	var node := BlockNode.new(size)
 	if typeof(src) != TYPE_DICTIONARY:
@@ -131,10 +99,9 @@ static func _node_from(src: Variant, size: int) -> BlockNode:
 	var d: Dictionary = src
 	node.damage = float(d.get(K_DAMAGE, 0.0))
 	node.revealed = bool(d.get(K_REVEALED, false))
-	if not d.has(K_CHILDREN):
-		return node
-	var kids: Array = d[K_CHILDREN]
-	for i: int in 4:
-		var child: Variant = kids[i] if i < kids.size() else null
-		node.children.append(null if child == null else _node_from(child, size >> 1))
+	if d.has(K_CHILDREN):
+		var kids: Array = d[K_CHILDREN]
+		for i: int in 4:
+			var child: Variant = kids[i] if i < kids.size() else null
+			node.children.append(null if child == null else _node_from(child, size >> 1))
 	return node

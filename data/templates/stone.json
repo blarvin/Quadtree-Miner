@@ -1,7 +1,5 @@
 {
-  "_": "Plain grey fill. Not one of GDD 6's three experiments -- it exists so the packing test has RUBBLE OF THE BOULDER'S OWN COLOUR CLASS.",
-  "_cost": "Twice dirt at every level, three at the root. Dirt and stone must not merely LOOK different -- if the grey fill costs the same as the brown fill, the material list is a palette rather than a vocabulary (GDD 4.4.3).",
-  "_why": "Painted at size 4 it is the rubble; hard_stone at size 16 is the boulder embedded in it. Both are grey (GDD 4.6 -- colour class is deliberately lossy), so the only thing telling the player the boulder is expensive is its BORDER. That is exactly the third visual channel GDD 4.1.2 requires, and the packing test is worthless if colour gives the game away.",
+  "_": "Grey fill, twice dirt at every level. Painted at size 4 it is the rubble the boulder hides in.",
   "material": "stone",
   "display_skin": "stone_rough",
   "default_rule": { "resistance": 2, "on_break": "subdivide", "drop": null },
