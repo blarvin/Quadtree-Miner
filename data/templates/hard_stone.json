@@ -1,0 +1,12 @@
+{
+  "_": "THE BOULDER (GDD 6 packing test). Subdivides ONE level and then goes terminal: a single clean cross, and nothing finer. 'Solid, 4-way, this will take work' (GDD 4.6.2).",
+  "_cost": "resistance 20 against a 1 HP pickaxe means the first break costs twenty strikes with NOTHING happening in between -- which is the read. Its total clearing cost is close to dirt's, but dirt gives you a break every strike or two and this gives you nothing for twenty. The wall is in the pacing, not the total.",
+  "_untuned": "GDD 8 lists resistance values as expected to move under playtest. This one is ordered, not tuned.",
+  "_gate": "Resistance is tool-relative (GDD 4.3.1), so this is also a progression gate at zero extra cost: unbreakable until you buy the drill.",
+  "material": "hard_stone",
+  "display_skin": "hard_stone_dense",
+  "default_rule": { "resistance": 20, "on_break": "subdivide", "drop": null },
+  "overrides": {
+    "size:8": { "on_break": "mine", "drop": null }
+  }
+}

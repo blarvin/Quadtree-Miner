@@ -94,6 +94,25 @@ func patched(patch: Dictionary) -> Rule:
 		r.set(key, patch[key])
 	return r
 
+## What the RENDERER shows. GDD 4.6 layer 3 -- "now you know it is clay, not
+## dirt". A node whose rule yields coal IS coal, so the material shown is
+## derived from the authored rule and cannot disagree with it. Same discipline
+## as fractures (4.6.2): not a depiction of the rules, but the rules.
+##
+## This is what makes GDD 6's "gift" a gift -- the coal core is visible because
+## its rule yields coal, with no second authored copy of where the coal is.
+func apparent_material(block_material: Materials.Id) -> Materials.Id:
+	return drop.material if drop != null else block_material
+
+## GDD 4.6.4 -- "siblings SHARING ITS RULE" are revealed together. Sharing a
+## rule means BEHAVING THE SAME, so a field that cannot fire is not compared:
+## on a subdividing node the drop is inert (subdividing yields children, not
+## units), so two subdividing rules that differ only in drop behave identically
+## and reveal together. Their difference materialises lower down, where the
+## terminal rule actually fires -- which is the reveal ladder doing its job.
+##
+## on_break itself is always compared, so a TERMINAL core is never equal to a
+## subdividing sibling. That is what keeps the hidden core of 4.6.3 dark.
 func equals(other: Rule) -> bool:
 	if other == null:
 		return false
@@ -101,10 +120,11 @@ func equals(other: Rule) -> bool:
 		return false
 	if on_break != other.on_break:
 		return false
-	if (drop == null) != (other.drop == null):
-		return false
-	if drop != null and not drop.equals(other.drop):
-		return false
+	if on_break != OnBreak.SUBDIVIDE:
+		if (drop == null) != (other.drop == null):
+			return false
+		if drop != null and not drop.equals(other.drop):
+			return false
 	if pass_down != other.pass_down:
 		return false
 	if not is_equal_approx(pass_down_falloff, other.pass_down_falloff):

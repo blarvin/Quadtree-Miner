@@ -144,9 +144,16 @@ func validate_for_root_size(root_size: int) -> PackedStringArray:
 			continue
 		_check_drop_fits(path_overrides[key], node_size, "override '%s'" % key, problems)
 
+	## A size key ABOVE the root is inert, not wrong. That is the granularity
+	## dial of GDD 4.1.2: the same template painted at size 16 and at size 4 is
+	## pebble versus boulder, and the size-16 rule simply never matches on the
+	## pebble. Twenty templates times five sizes is not a hundred templates.
+	##
+	## A path below the atom IS an error (above) -- the asymmetry is real. A
+	## size key names a size that may or may not occur; a quad-path names a node
+	## that cannot exist, and paths are the thing an author counts by hand.
 	for size: int in size_overrides:
 		if size > root_size:
-			problems.append("override 'size:%d' is larger than the size-%d root" % [size, root_size])
 			continue
 		_check_drop_fits(size_overrides[size], size, "override 'size:%d'" % size, problems)
 

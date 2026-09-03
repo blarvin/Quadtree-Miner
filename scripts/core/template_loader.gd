@@ -12,6 +12,13 @@ const TEMPLATE_KEYS: PackedStringArray = [
 	"material", "colour_class", "display_skin", "default_rule", "overrides",
 ]
 
+## JSON has no comments, and these templates are the argument of GDD 6 written
+## down -- they need to say WHY, next to the numbers, or the next reader tunes
+## a value without knowing what it was chosen against. Any key starting with
+## "_" is an authoring note and is ignored everywhere.
+static func is_note(key: String) -> bool:
+	return key.begins_with("_")
+
 class Result extends RefCounted:
 	var template: BlockTemplate = null
 	var errors: PackedStringArray = []
@@ -28,7 +35,7 @@ static func from_dict(id: String, src: Dictionary) -> Result:
 	t.id = id
 
 	for key: String in src:
-		if not TEMPLATE_KEYS.has(key):
+		if not TEMPLATE_KEYS.has(key) and not is_note(key):
 			res.errors.append("%s: unknown template key '%s'" % [id, key])
 
 	# material -------------------------------------------------------------
@@ -137,7 +144,7 @@ static func _parse_patch(src: Dictionary, ctx: String, errors: PackedStringArray
 	var patch: Dictionary = {}
 
 	for key: String in src:
-		if not Rule.FIELDS.has(key):
+		if not Rule.FIELDS.has(key) and not is_note(key):
 			errors.append("%s: unknown rule field '%s'" % [ctx, key])
 
 	if src.has("resistance"):
@@ -202,7 +209,7 @@ static func _parse_drop(src: Variant, ctx: String, errors: PackedStringArray) ->
 		return null
 	var d: Dictionary = src
 	for key: String in d:
-		if key != "material" and key != "size":
+		if key != "material" and key != "size" and not is_note(key):
 			errors.append("%s.drop: unknown key '%s'" % [ctx, key])
 	var material: int = Materials.from_name(str(d.get("material", "")))
 	if material < 0:

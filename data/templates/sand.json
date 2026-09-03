@@ -1,0 +1,17 @@
+{
+  "_": "THE TRAP (GDD 6). One strike collapses a shaft clean through, dropping you somewhere you did not choose. Not punishment -- CONSEQUENCE. Most digging games have no way to dig wrong.",
+  "_arithmetic": "resistance 0.25 against a 1 HP pickaxe is deliberate: 1.0 - 0.25 x 4 = 0 breaks exactly four levels and stops with nothing left over. HP is continuous precisely so this is expressible (GDD 4.3.1).",
+  "_scope": "pass_down carries the blow DOWN the tree, so one strike bores a full-depth hole rather than collapsing the whole 16x16. Collapsing sideways is pass_through, which Phase 0 authors as none (GDD 6).",
+  "material": "sand",
+  "display_skin": "sand_loose",
+  "default_rule": {
+    "resistance": 0.25,
+    "on_break": "subdivide",
+    "drop": null,
+    "pass_down": true,
+    "pass_down_falloff": 1.0
+  },
+  "overrides": {
+    "size:2": { "on_break": "mine", "drop": null }
+  }
+}

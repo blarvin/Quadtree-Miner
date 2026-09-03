@@ -1,0 +1,12 @@
+{
+  "_": "THE BASELINE (GDD 6). The prototype block of GDD 4.5, verbatim.",
+  "_shape": "Uniform, progressive, no propagation. Root resists 2 so the first strike buys a look before committing; 1 HP at every level below; terminal at size 2 so the last blow is chunky rather than a fifth identical one. Both are facts about SIZE, so neither is a quad-path.",
+  "_dirt": "Dirt vanishes -- drop: null (GDD 4.5, POC drop handling).",
+  "material": "dirt",
+  "display_skin": "dirt_rough",
+  "default_rule": { "resistance": 1, "on_break": "subdivide", "drop": null },
+  "overrides": {
+    "size:16": { "resistance": 2 },
+    "size:2": { "on_break": "mine", "drop": null }
+  }
+}

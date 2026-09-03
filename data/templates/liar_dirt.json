@@ -1,0 +1,13 @@
+{
+  "_": "THE LIAR (GDD 6). Identical to honest_dirt when untouched -- same material, same skin, same root rule. Strike each quadrant once: three crumble, one does not.",
+  "_why": "The player's 'huh?' IS the game. One override buys a whole quadrant that refuses, and nothing about the block's surface says so.",
+  "_note": "Q2 is BL (+Y is down, GDD 4.0.2). The override applies to that node AND BELOW, so the entire bottom-left quarter is eight times the work, all the way to the atom.",
+  "material": "dirt",
+  "display_skin": "dirt_rough",
+  "default_rule": { "resistance": 1, "on_break": "subdivide", "drop": null },
+  "overrides": {
+    "size:16": { "resistance": 2 },
+    "size:2": { "on_break": "mine", "drop": null },
+    "Q2": { "resistance": 8 }
+  }
+}
