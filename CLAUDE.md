@@ -20,9 +20,17 @@ GODOT="/c/Users/blarv/Desktop/GODOT/Godot_v4.7.2-stable_win64_console.exe"
 "$GODOT" --path . scenes/main.tscn                               # run the game
 ```
 
+**Run `--import` after adding any file with a new `class_name`.** The
+script-class cache is written by the editor, so a class created outside it is
+invisible to `--script` and every use fails with *"Could not find type X"*.
+
 Tests are plain GDScript, no addon. A file in `tests/` named `test_*.gd`
 is auto-discovered; every method named `test_*` runs. Use
 `runner.check(cond, msg)` / `runner.check_eq(actual, expected, msg)`.
+
+**The runner does not catch runtime errors.** A test that hits one (a failed
+cast, a null deref) aborts mid-method, and the run still prints `0 failed` and
+exits 0. Read the output for `SCRIPT ERROR`, not just the tally.
 
 ## Layout
 
@@ -49,8 +57,13 @@ is auto-discovered; every method named `test_*` runs. Use
 4. **Void is the absence of a block.** There is no air material, no air
    block, no void object. (§4.1.1)
 5. **Templates are sparse override trees**, never flat 256-cell arrays.
-   `default_rule` + overrides keyed by quad-path, each applying to that node
-   *and below*. An unstruck block is **one node in memory**. (§4.7.1)
+   `default_rule` + overrides under **two kinds of key**: a **quad-path**
+   (`Q1.Q2`) addresses *position* and applies to that node *and below*; a
+   **size key** (`size:2`) addresses *physical size* and applies to any node of
+   that edge length without inheriting downward. Overrides are **partial
+   patches** — an absent field means inherit, never reset. Resolution, later
+   wins: `default → size:N → paths shallowest to deepest`, so **position beats
+   size**. An unstruck block is **one node in memory**. (§4.7.1)
 6. **Rules are template-authoritative** — looked up by path at break time,
    never copied/frozen onto the node. (§4.7.2)
 7. **`damage` and `revealed` are persisted world state**, not decoration.

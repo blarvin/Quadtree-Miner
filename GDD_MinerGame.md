@@ -337,7 +337,16 @@ It also makes the 90/10 ratio (§4.4.3) **legible rather than merely tuned** —
 
 #### The rest of the block
 
-Homogeneous, progressive, `pass_down = false`, `pass_through = none`. **Root `resistance: 2`** (fracture before commit, above); 1 HP at every level below. A `default_rule` plus one root override (§4.7.1). A size-16 root against the starting pickaxe (1 HP/strike):
+Homogeneous, progressive, `pass_down = false`, `pass_through = none`. **Root `resistance: 2`** (fracture before commit, above); 1 HP at every level below. A `default_rule` plus **two size rules** (§4.7.1) — and nothing else:
+
+```
+default_rule:  { resistance: 1, on_break: subdivide, drop: none }
+overrides:
+  "size:16":   { resistance: 2 }                                  # the look before committing
+  "size:2":    { on_break: mine, drop: {coal, size 1} }            # the chunky payoff
+```
+
+Both are statements about **size**, not position, which is why neither is a quad-path key: a `""` root override would push `resistance: 2` onto every level and destroy the "1 HP below the root" half of the design. A size-16 root against the starting pickaxe (1 HP/strike):
 
 1. **Strike 1** → size-16 node takes 1 of 2 HP. **Reveals** fracture pattern + material (persisted, §4.6.1). **Does not subdivide.** ← *the look before committing*
 2. **Strike 2** → size-16 breaks, `subdivide` into 4 size-8 children.
@@ -445,7 +454,28 @@ A template is **not** a bottom-up array of all 256 atoms. It is a **sparse tree 
 
 - Every template has a **`default_rule`** (resistance, on_break, drop, pass-down/through behaviour).
 - It optionally carries rules keyed by **quad-path** (`Q0`, `Q0.Q3`, `Q1.Q3.Q2`). Each override applies to **that node and everything beneath it**, until a deeper override says otherwise.
+- It optionally carries rules keyed by **size** (`size:2`, `size:8`) — see below.
 - Any node whose path has no override **inherits from its nearest ancestor** that has one.
+- **Overrides are partial patches, not whole rules.** An override states only the fields it changes; everything else keeps inheriting. This is what makes `"": {resistance: 2}` a legal, complete override rather than a rule missing five fields.
+
+**Two kinds of key, because there are two kinds of fact.**
+
+| Key | Addresses | Applies to | Inherits downward? |
+|---|---|---|---|
+| `Q1.Q2` | **position** | that node **and below** | **yes** |
+| `size:2` | **physical size** | any node of that edge length | **no** |
+
+Size keys exist because some facts about a material are facts about *size*, not position — §4.7's *"at what node size the material becomes minable"* is exactly one. "Every size-2 node is terminal" has no position to name; expressed by path it takes **64 keys**, which is the flat-array authoring this section exists to refuse. One `size:2` rule says it once.
+
+**Resolution order — later wins, field by field:**
+
+```
+default_rule  ->  size:N for this node's size  ->  path overrides, shallowest to deepest
+```
+
+Path overrides resolve **last**, so **position beats size**: a hand-placed core at `Q1.Q2` overrules whatever the material does at size 4 generally. This falls out of the ordering — there is no field-by-field precedence bookkeeping, and no third concept.
+
+*Note this is why §4.5's fracture-before-commit is a **`size:16` rule, not a `""` path override**: a path override applies to its node **and below**, which would push `resistance: 2` onto every level of the block. §4.5 wants 2 at the root and 1 at every level below — which is a statement about size, and belongs in a size key.*
 
 **Inheritance describes what descendants *would* inherit — it does not force them to exist.** A node's `on_break` alone decides that:
 
@@ -552,10 +582,25 @@ BlockTemplate                           # SPARSE OVERRIDE TREE (§4.7.1)
                                         #   Cracks are DERIVED from the
                                         #   override tree (§4.6.2–4.6.3).
   default_rule: Rule                    # homogeneous template = this alone
-  overrides: map<quad_path, Rule>       # "Q0", "Q0.Q3", "Q1.Q3.Q2"
-                                        # applies to that node AND BELOW,
-                                        #   until a deeper override supersedes
-                                        # paths are root-relative (§4.7.1)
+  overrides: map<key, RulePatch>        # TWO KINDS OF KEY (§4.7.1):
+                                        # quad-path  "Q0", "Q0.Q3", "Q1.Q3.Q2"
+                                        #   applies to that node AND BELOW,
+                                        #   until a deeper override supersedes.
+                                        #   Root-relative, so a path names a
+                                        #   different physical size under a
+                                        #   size-32 root than a size-16 one.
+                                        # size       "size:2", "size:8"
+                                        #   applies to any node of that edge
+                                        #   length; does NOT inherit downward.
+                                        #   This is "at what node size the
+                                        #   material becomes minable" (§4.7).
+                                        # Values are PARTIAL PATCHES, not whole
+                                        #   Rules -- an absent field means
+                                        #   inherit, never reset to default.
+                                        # Resolution, later wins:
+                                        #   default -> size:N -> paths,
+                                        #   shallowest to deepest.
+                                        #   Paths last, so POSITION BEATS SIZE.
 
 Rule
   resistance: HP                        # HP threshold to break this node
