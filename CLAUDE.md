@@ -18,7 +18,14 @@ GODOT="/c/Users/blarv/Desktop/GODOT/Godot_v4.7.2-stable_win64_console.exe"
 "$GODOT" --headless --path . --script res://tests/run_tests.gd   # tests (exit 1 on fail)
 "$GODOT" --headless --path . --import                            # reimport assets
 "$GODOT" --path . scenes/main.tscn                               # run the game
+"$GODOT" --path . scenes/debug_map.tscn                          # look at the dev map
 ```
+
+`scenes/debug_map.tscn` is a **throwaway** (`scripts/render/debug_map_view.gd`):
+colour class + block borders at true scale, no fractures, no player. It exists
+to answer GDD §4.1.2's prerequisite — *are block borders legible on untouched
+terrain?* — which no test can answer. WASD/arrows pan, TAB overview, 1-4 jump
+to the set pieces. Delete it when the real renderer lands.
 
 **Run `--import` after adding any file with a new `class_name`.** The
 script-class cache is written by the editor, so a class created outside it is

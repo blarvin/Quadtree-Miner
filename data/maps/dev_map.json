@@ -1,0 +1,124 @@
+{
+  "_": "Phase-0 dev map (GDD 4.1.0). 1024x1024 atoms = 64x64 standard-block cells = 128 character-heights deep. Hand-authored; there is no painter until Phase 1.",
+  "_landmarks": [
+    "rows 0-3    sky",
+    "rows 4-13   topsoil dirt, liars scattered so the 'huh?' is met early",
+    "row  10     THE PACKING TEST: size-4 stone rubble with size-16 hard_stone boulders at cols 12, 28, 44. Same colour class, so only the BORDER says the wall is expensive (GDD 4.1.2).",
+    "rows 18-21  THE TRAP: sand shelf at cols 20-27 sitting directly over a cave at cols 18-29. One strike and you are 32 atoms lower.",
+    "row  28     second rubble band, boulders at cols 8, 24, 40, 56",
+    "rows 34-37  second trap, second cave",
+    "rows 42-55  hard-stone gates with OFFSET GAPS -- routes without walls (GDD 4.1.2). No direction is forbidden; some are just dear.",
+    "rows 56-59  a deep chamber under one more sand shelf"
+  ],
+  "_untuned": "Layout is a first draft. GDD 8 expects resistance values and pacing to move under playtest; this is the map that makes them movable.",
+  "extent_atoms": [
+    1024,
+    1024
+  ],
+  "cell_atoms": 16,
+  "legend": {
+    "_": "One character per 16x16 atom cell. A legend entry names a template AND A BLOCK SIZE -- a size-4 entry tiles its cell with sixteen blocks (GDD 4.1.2).",
+    ".": null,
+    "d": {
+      "template": "honest_dirt",
+      "size": 16,
+      "_": "the baseline"
+    },
+    "l": {
+      "template": "liar_dirt",
+      "size": 16,
+      "_": "looks exactly like d until you strike its Q2"
+    },
+    "s": {
+      "template": "stone",
+      "size": 16,
+      "_": "grey fill, dearer than dirt"
+    },
+    "r": {
+      "template": "stone",
+      "size": 4,
+      "_": "THE SAME TEMPLATE as s, painted small. Rubble, not a new material."
+    },
+    "g": {
+      "template": "gift_stone",
+      "size": 16,
+      "_": "coal core, visible once fractured"
+    },
+    "S": {
+      "template": "sand",
+      "size": 16,
+      "_": "collapses in one strike -- always placed OVER a void"
+    },
+    "H": {
+      "template": "hard_stone",
+      "size": 16,
+      "_": "the boulder / the gate"
+    }
+  },
+  "grid": [
+    "................................................................",
+    "................................................................",
+    "................................................................",
+    "................................................................",
+    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "ddddddddddldddddddddddddddddddddddddddlddddddddddddddddddddddddd",
+    "ddddddddddddddddddddddlddddddddddddddddddddddddddddddddddddddddd",
+    "ddddddddddddddddddddddddddddddddddddddddddddddddddlddddddddddddd",
+    "ddddddddddddddldddddddddddddddlddddddddddddddddddddddddddddddddd",
+    "ddddddddddddddddddddddddddddddddddddddddddddlddddddddddddddddddd",
+    "ddddrrrrrrrrHrrrrrrrrrrrrrrrHrrrrrrrrrrrrrrrHrrrrrrrrrrrrrrrdddd",
+    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "ddddddddddddddddddddlddddddddddddddddddddddddddddddddddddddddddd",
+    "ddddddddddddddddddddddddddddddddddddddddddddddddddddlddddddddddd",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssgsssssssssssssssssgsssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssgsssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssgsssssss",
+    "ssssssssssssssssssssSSSSSSSSssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssSSSSSSSSssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssss............ssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssss............ssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssgsssssssssssssss",
+    "ssssssgsssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssgsssssssssssssssssssssss",
+    "sssssssssssssssssssssssssssssssHHsssssssssssssssssssssssssssssss",
+    "ssssssssssssssgsssssssssssssssssssssssssssssssssssssssssssgsssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssrrrrHrrrrrrrrrrrrrrrHrrrrrrrrrrrrrrrHrrrrrrrrrrrrrrrHrrrssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssgsssssssssssssssssssssssssssssssss",
+    "ssss..........ssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssss..........ssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssgsssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssSSSSSSSSssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssSSSSSSSSssssssssssss",
+    "ssssssssssssssssssssgsssssssssssssssssssss............ssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssss............ssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssgsssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssgsssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssgsssssssssssss",
+    "ssssrrrrrrrrrrrrHrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrHrrrrrrrrrrrssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssgsssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssgsssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "HHHHHHHHHHHHHHHHHHHHssssssssssHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+    "ssssssssssssssssssssssssssssssSSSSSSssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssSSSSSSssssssssssssssssssssssssssss",
+    "ssssssssgsssssssssssssssssss..........ssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssss..........ssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssgsssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssgsssssssssssssssssssssssssssssssssssssssssss",
+    "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+  ]
+}
