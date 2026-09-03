@@ -1,6 +1,36 @@
-[gd_scene load_steps=2 format=3 uid="uid://bqmn0main0scn"]
+[gd_scene format=3 uid="uid://bqmn0main0scn"]
 
-[ext_resource type="Script" path="res://scripts/game/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://bvff1n7mrpf1v" path="res://scripts/game/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://hyjldpe2cmvs" path="res://scripts/render/terrain_view.gd" id="2_terrain"]
+[ext_resource type="Script" uid="uid://cfrddwgqh7xbp" path="res://scripts/render/ladders_view.gd" id="3_ladders"]
+[ext_resource type="Script" uid="uid://d8402hyhlsvh" path="res://scripts/game/player.gd" id="4_player"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=1541871300]
 script = ExtResource("1_main")
+
+[node name="Stage" type="Node2D" parent="." unique_id=1238265952]
+scale = Vector2(3, 3)
+
+[node name="Terrain" type="Node2D" parent="Stage" unique_id=559794795]
+script = ExtResource("2_terrain")
+
+[node name="Ladders" type="Node2D" parent="Stage" unique_id=832366930]
+script = ExtResource("3_ladders")
+
+[node name="Player" type="Node2D" parent="Stage" unique_id=1125243886]
+script = ExtResource("4_player")
+strike_rate = 24.0
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1423738879]
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=2035573270]
+
+[node name="Label" type="Label" parent="HUD" unique_id=698854542]
+offset_left = 4.0
+offset_top = 3.0
+offset_right = 400.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.85, 0.87, 0.9, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 10
