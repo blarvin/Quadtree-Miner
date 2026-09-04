@@ -40,15 +40,21 @@ func test_the_sky_is_void() -> void:
 	runner.check(_map().block_at(_at(10, 2)) == null, "row 2 is sky")
 	runner.check(_map().block_at(_at(10, 4)) != null, "row 4 is ground")
 
-func test_a_size_4_cell_places_sixteen_blocks_of_the_same_template() -> void:
+## A legend entry smaller than its cell tiles the cell (GDD 4.1.2). Rubble size
+## is an authoring dial, so the expectation comes from the map, not from here.
+func test_a_sub_cell_legend_entry_tiles_its_cell() -> void:
 	var w: World = _map()
+	var legend: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(MAP))["legend"]
+	var size: int = int(legend["r"]["size"])
+	var per_edge: int = CELL / size
 	var seen: Dictionary = {}
-	for y: int in 4:
-		for x: int in 4:
-			var b: BlockInstance = w.block_at(_at(5, 10) + Vector2i(x * 4, y * 4))
-			runner.check(b != null and b.size == 4 and b.template_id == "stone", "rubble at (%d,%d)" % [x, y])
+	for y: int in per_edge:
+		for x: int in per_edge:
+			var b: BlockInstance = w.block_at(_at(5, 10) + Vector2i(x * size, y * size))
+			runner.check(b != null and b.size == size and b.template_id == "stone",
+				"rubble at (%d,%d) is a size-%d stone" % [x, y, size])
 			seen[b] = true
-	runner.check_eq(seen.size(), 16, "sixteen distinct blocks")
+	runner.check_eq(seen.size(), per_edge * per_edge, "%d distinct blocks" % (per_edge * per_edge))
 	var boulder: BlockInstance = w.block_at(_at(12, 10))
 	runner.check(boulder.size == 16 and boulder.template_id == "hard_stone", "the boulder at cell (12, 10)")
 

@@ -1,0 +1,11 @@
+{
+  "_": "Terminal at the root (GDD 4.3): three strikes, no subdivision, gone. Surprise topsoil.",
+  "material": "dirt",
+  "display_skin": "dirt_rough",
+  "authored_size": 16,
+  "default_rule": {
+    "resistance": 3,
+    "on_break": "mine",
+    "drop": null
+  }
+}

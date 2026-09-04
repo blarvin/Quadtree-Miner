@@ -1,0 +1,16 @@
+{
+  "_": "One fracture, then terminal (GDD 4.3, 4.7.1). Authored for a size-16 root: one strike opens four size-8 quarters, one strike clears each.",
+  "material": "dirt",
+  "display_skin": "dirt_rough",
+  "authored_size": 16,
+  "default_rule": {
+    "resistance": 1,
+    "on_break": "subdivide",
+    "drop": null
+  },
+  "overrides": {
+    "size:8": {
+      "on_break": "mine"
+    }
+  }
+}

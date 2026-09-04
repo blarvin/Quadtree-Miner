@@ -5,6 +5,7 @@ extends Node2D
 
 @export var template_dir: String = "res://data/templates"
 @export var map_path: String = "res://data/maps/dev_map.json"
+@export var painted_path: String = "res://data/maps/painted_map.json"  ## the painter's output
 @export var px_per_atom: int = 3                       ## GDD 4.1.2 finding
 @export var start_box: Vector2i = Vector2i(508, 56)    ## GDD 3.1.4
 @export var surface_y: int = 64                        ## depth is measured from here
@@ -13,6 +14,7 @@ extends Node2D
 @onready var terrain: Node2D = $Stage/Terrain
 @onready var ladders_view: Node2D = $Stage/Ladders
 @onready var player: Player = $Stage/Player
+@onready var editor: MapEditor = $Stage/Editor
 @onready var camera: Camera2D = $Camera
 @onready var hud: Label = $HUD/Label
 
@@ -22,7 +24,12 @@ var ladders := Ladders.new()
 func _ready() -> void:
 	var errors: PackedStringArray = []
 	var templates: Dictionary = TemplateLoader.load_dir(template_dir, errors)
-	world = MapLoader.from_file(map_path, templates, errors)
+	# The painted map wins when it exists: free placement cannot be written
+	# back to a character grid (GDD 4.1.0), so once painted it is the authored map.
+	if FileAccess.file_exists(painted_path):
+		world = WorldSave.load_from_file(painted_path, templates, errors)
+	else:
+		world = MapLoader.from_file(map_path, templates, errors)
 	for e: String in errors:
 		push_error(e)
 	stage.scale = Vector2(px_per_atom, px_per_atom)
@@ -32,6 +39,9 @@ func _ready() -> void:
 	player.world = world
 	player.ladders = ladders
 	player.box = start_box
+	editor.world = world
+	editor.player = player
+	editor.painted_path = painted_path
 
 func _process(_delta: float) -> void:
 	var centre: Vector2 = player.centre() * float(px_per_atom)
@@ -45,6 +55,7 @@ func _process(_delta: float) -> void:
 		],
 		"coal %d   ladders placed %d   strikes %d" % [player.coal, ladders.units.size(), player.strikes],
 		"arrows/WASD move + dig   space place ladder   R restart",
+		editor.status(),
 	])
 
 func _unhandled_input(event: InputEvent) -> void:

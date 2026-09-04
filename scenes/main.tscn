@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://hyjldpe2cmvs" path="res://scripts/render/terrain_view.gd" id="2_terrain"]
 [ext_resource type="Script" uid="uid://cfrddwgqh7xbp" path="res://scripts/render/ladders_view.gd" id="3_ladders"]
 [ext_resource type="Script" uid="uid://d8402hyhlsvh" path="res://scripts/game/player.gd" id="4_player"]
+[ext_resource type="Script" path="res://scripts/tools/map_editor.gd" id="5_editor"]
 
 [node name="Main" type="Node2D" unique_id=1541871300]
 script = ExtResource("1_main")
@@ -20,6 +21,9 @@ script = ExtResource("3_ladders")
 [node name="Player" type="Node2D" parent="Stage" unique_id=1125243886]
 script = ExtResource("4_player")
 strike_rate = 24.0
+
+[node name="Editor" type="Node2D" parent="Stage"]
+script = ExtResource("5_editor")
 
 [node name="Camera" type="Camera2D" parent="." unique_id=1423738879]
 

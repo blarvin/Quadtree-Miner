@@ -46,6 +46,18 @@ func find_overlap(r: Rect2i) -> BlockInstance:
 				return b
 	return null
 
+## Every block touching `r`, each once. A block spans several index cells, so
+## the dedupe is the point. Culling and the painter's overlap rule both want it.
+func blocks_in(r: Rect2i) -> Array[BlockInstance]:
+	var out: Array[BlockInstance] = []
+	var seen: Dictionary = {}
+	for cell: Vector2i in _cells_of(r):
+		for b: BlockInstance in _index.get(cell, [] as Array[BlockInstance]):
+			if not seen.has(b) and b.rect().intersects(r):
+				seen[b] = true
+				out.append(b)
+	return out
+
 func block_at(atom: Vector2i) -> BlockInstance:
 	for b: BlockInstance in _index.get(_cell_of(atom), [] as Array[BlockInstance]):
 		if b.contains(atom):

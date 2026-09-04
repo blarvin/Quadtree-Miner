@@ -13,6 +13,10 @@ var id: String = ""
 var material: Materials.Id = Materials.Id.DIRT
 var colour_class: Materials.ColourClass = Materials.ColourClass.BROWN
 var display_skin: String = ""
+## The root size the override tree was written for; 0 when unstated. Authoring
+## metadata, never a rule -- an override tree is only meaningful under some
+## root sizes (GDD 4.7.1), and this records which one the author meant.
+var authored_size: int = 0
 var default_rule: Rule = null
 var path_overrides: Dictionary = {}  ## canonical path key -> patch
 var size_overrides: Dictionary = {}  ## size in atoms -> patch

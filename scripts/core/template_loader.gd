@@ -4,7 +4,8 @@
 class_name TemplateLoader
 
 const TEMPLATE_KEYS: PackedStringArray = [
-	"material", "colour_class", "display_skin", "default_rule", "overrides",
+	"material", "colour_class", "display_skin", "authored_size",
+	"default_rule", "overrides",
 ]
 
 static func is_note(key: String) -> bool:
@@ -39,6 +40,13 @@ static func from_dict(id: String, src: Dictionary, errors: PackedStringArray) ->
 
 	t.display_skin = str(src.get("display_skin", ""))
 
+	if src.has("authored_size"):
+		var authored: int = int(src["authored_size"])
+		if not Atoms.is_valid_size(authored):
+			errors.append("%s: authored_size %s is not a power of two >= 1" % [id, src["authored_size"]])
+		else:
+			t.authored_size = authored
+
 	if typeof(src.get("default_rule")) != TYPE_DICTIONARY:
 		errors.append("%s: default_rule must be an object" % id)
 	else:
@@ -72,6 +80,11 @@ static func from_dict(id: String, src: Dictionary, errors: PackedStringArray) ->
 				errors.append("%s: malformed key -- want '', 'Q0.Q3' or 'size:4'" % ctx)
 				continue
 			t.path_overrides[BlockTemplate.path_to_key(path)] = patch
+
+	# Only checkable once the whole tree is parsed (GDD 4.7.1).
+	if t.authored_size > 0 and t.default_rule != null:
+		for p: String in t.validate_for_root_size(t.authored_size):
+			errors.append("%s: at its authored_size %d, %s" % [id, t.authored_size, p])
 
 	return t if errors.size() == before else null
 
