@@ -1,7 +1,8 @@
 ## Draws the world in atom units (the parent Stage scales to pixels).
 ## Three channels (GDD 4.1.2): colour class, block border, fracture.
 ## Fractures are the tree, rendered (GDD 4.6.2): a subdivided node draws its
-## cross; a revealed leaf that would subdivide draws it faintly.
+## full cross; a revealed leaf that would subdivide draws one as far as its
+## damage has carried it (GDD 4.9.2). Damage has no channel of its own.
 extends Node2D
 
 @export var void_color: Color = Color(0.05, 0.05, 0.07)
@@ -19,8 +20,17 @@ extends Node2D
 }
 @export var border_darken: float = 0.55
 @export var crack_color: Color = Color(0.05, 0.04, 0.04)
-@export var crack_preview_alpha: float = 0.35  ## revealed-but-unbroken cross
-@export var damage_tint: Color = Color(1.0, 0.5, 0.2, 0.25)  ## overlay scaled by damage/resistance
+@export var crack_min_alpha: float = 0.35  ## a promise just opening (GDD 4.9.1)
+## How far a crack spreads before the break, per material (GDD 4.9.2, 4.9.5).
+## 0 keeps a material silent until it breaks; 1 draws the whole cross just
+## before it does. Untuned.
+@export var fracture_tell: Dictionary = {
+	Materials.Id.DIRT: 0.6,
+	Materials.Id.SAND: 1.0,
+	Materials.Id.STONE: 0.35,
+	Materials.Id.HARD_STONE: 0.0,
+	Materials.Id.COAL: 0.8,
+}
 
 var world: World = null
 var view: Rect2 = Rect2()  ## visible area in atoms, set by Main
@@ -50,14 +60,8 @@ func _draw_node(node: BlockNode, origin: Vector2, t: BlockTemplate, path: Array[
 		if node.revealed:
 			fill = material_colors[rule.apparent_material(t.material)]
 		draw_rect(r, fill, true)
-		if node.damage > 0.0 and rule.resistance > 0.0:
-			var tint: Color = damage_tint
-			tint.a *= clampf(node.damage / rule.resistance, 0.0, 1.0)
-			draw_rect(r, tint, true)
 		if node.revealed and node.size > 1 and rule.on_break == Rule.OnBreak.SUBDIVIDE:
-			var c: Color = crack_color
-			c.a = crack_preview_alpha
-			_cross(r, c)
+			_promise(r, node, rule, t)
 		return
 	for q: int in 4:
 		var child: BlockNode = node.children[q]
@@ -68,7 +72,24 @@ func _draw_node(node: BlockNode, origin: Vector2, t: BlockTemplate, path: Array[
 		_draw_node(child, Vector2(Quad.child_origin(q, Vector2i(origin), node.size)), t, child_path)
 	_cross(r, crack_color)
 
-func _cross(r: Rect2, c: Color) -> void:
+## The cross a revealed leaf would subdivide into, inked as far as its damage
+## has carried it: extent = tell x damage / resistance (GDD 4.9.2). Arms grow
+## from the centre outward -- the symmetric case, which needs no impact point
+## (GDD 4.9.4).
+func _promise(r: Rect2, node: BlockNode, rule: Rule, t: BlockTemplate) -> void:
+	if rule.resistance <= 0.0:
+		return  # breaks on any damage; never sits here damaged
+	var tell: float = fracture_tell[rule.apparent_material(t.material)]
+	var extent: float = tell * clampf(node.damage / rule.resistance, 0.0, 1.0)
+	if extent <= 0.0:
+		return
+	var c: Color = crack_color
+	c.a = lerpf(crack_min_alpha, 1.0, extent)
+	_cross(r, c, extent)
+
+## `extent` is the fraction of each arm, from the centre out, that is inked.
+func _cross(r: Rect2, c: Color, extent: float = 1.0) -> void:
 	var mid: Vector2 = r.get_center()
-	draw_line(Vector2(mid.x, r.position.y), Vector2(mid.x, r.end.y), c, -1.0)
-	draw_line(Vector2(r.position.x, mid.y), Vector2(r.end.x, mid.y), c, -1.0)
+	var reach: Vector2 = r.size * 0.5 * extent
+	draw_line(Vector2(mid.x, mid.y - reach.y), Vector2(mid.x, mid.y + reach.y), c, -1.0)
+	draw_line(Vector2(mid.x - reach.x, mid.y), Vector2(mid.x + reach.x, mid.y), c, -1.0)
