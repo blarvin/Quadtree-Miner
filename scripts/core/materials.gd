@@ -1,9 +1,9 @@
-## The Phase-0 materials (GDD 4.7). Void is not a material (GDD 4.1.1).
+## The materials (GDD 4). Void is not a material (GDD 1).
 class_name Materials
 
 enum Id { DIRT, STONE, HARD_STONE, SAND, COAL }
 
-## What the player sees before the first strike (GDD 4.6). Deliberately lossy:
+## What the player sees before the first strike (GDD 5). Deliberately lossy:
 ## a class names a family, never a material or its cost.
 enum ColourClass { BROWN, GREY }
 

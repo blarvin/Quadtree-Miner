@@ -1,4 +1,4 @@
-## The painter's edit ops (GDD 6, Phase 1 authoring). These guard against
+## The painter's edit ops (authoring tool). These guard against
 ## losing authored work: the overlap rule, undo, and the flat-file round trip.
 extends RefCounted
 
@@ -37,7 +37,7 @@ func test_a_stamp_places_n_squared_blocks() -> void:
 	runner.check_eq(w.block_at(Vector2i(15, 15)).origin, Vector2i(12, 12), "covers 16 atoms")
 	runner.check(w.block_at(Vector2i(16, 0)) == null, "and no more")
 
-## The overlap rule (GDD 4.1.1): touched blocks die whole, leaving void.
+## The overlap rule (GDD 1): touched blocks die whole, leaving void.
 func test_a_stamp_deletes_every_block_it_touches_whole() -> void:
 	var w: World = _world()
 	PaintOps.stamp(w, Vector2i(0, 0), 16, 1, A).apply(w)
@@ -118,7 +118,7 @@ func test_a_painted_world_round_trips_through_the_flat_format() -> void:
 	runner.check_eq(back.extent, w.extent, "extent survived")
 
 ## Saving from inside the running game must write the map as authored, not as
-## dug: damage and reveal are play state (GDD 4.6.1), not terrain.
+## dug: damage and reveal are play state (GDD 5.1), not terrain.
 func test_pristine_strips_play_state_but_keeps_the_blocks() -> void:
 	var w: World = _world()
 	PaintOps.stamp(w, Vector2i(0, 0), 16, 1, A).apply(w)

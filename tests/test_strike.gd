@@ -1,4 +1,4 @@
-## Breaking, cascading, revealing (GDD 4.3-4.6).
+## Breaking, cascading, revealing (GDD 3-4.6).
 extends RefCounted
 
 var runner: SceneTree
@@ -148,4 +148,4 @@ func test_pass_through_is_parsed_but_not_routed() -> void:
 	var root := BlockNode.new(16)
 	Strike.apply(root, t, Vector2i.ZERO, 1.0)
 	Strike.apply(root, t, Vector2i.ZERO, 1.0)
-	runner.check_eq(root.children[Quad.TR].damage, 0.0, "no sibling damage: routing is Phase 2")
+	runner.check_eq(root.children[Quad.TR].damage, 0.0, "no sibling damage: pass_through is not routed yet")

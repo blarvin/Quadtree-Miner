@@ -1,5 +1,5 @@
 {
-  "_": "The trap (GDD 6). 0.25 resistance with full pass_down: one 1 HP strike breaks exactly four levels and opens a shaft. Untuned.",
+  "_": "The trap (GDD 4.3). 0.25 resistance with full pass_down: one 1 HP strike breaks exactly four levels and opens a shaft. Untuned.",
   "material": "sand",
   "display_skin": "sand_loose",
   "default_rule": { "resistance": 0.25, "on_break": "subdivide", "drop": null, "pass_down": true, "pass_down_falloff": 1.0 },

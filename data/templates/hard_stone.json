@@ -1,5 +1,5 @@
 {
-  "_": "The boulder (GDD 6). Twenty strikes with nothing happening, then one clean cross, then terminal at size 8. Same colour class as stone. Untuned.",
+  "_": "The boulder (GDD 4.3). Twenty strikes with nothing happening, then one clean cross, then terminal at size 8. Same colour class as stone. Untuned.",
   "material": "hard_stone",
   "display_skin": "hard_stone_dense",
   "default_rule": { "resistance": 20, "on_break": "subdivide", "drop": null },

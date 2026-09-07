@@ -1,4 +1,4 @@
-## The node model (GDD 4.3, 5.2).
+## The node model (GDD 3, 5.2).
 extends RefCounted
 
 var runner: SceneTree

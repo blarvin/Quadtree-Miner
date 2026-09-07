@@ -1,4 +1,4 @@
-## Spatial index, strike routing, save round trip (GDD 4.1, 5.1).
+## Spatial index, strike routing, save round trip (GDD 2, 5.1).
 extends RefCounted
 
 var runner: SceneTree

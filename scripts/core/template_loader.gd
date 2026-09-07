@@ -1,4 +1,4 @@
-## Parses and validates template JSON (GDD 4.7.1, 5.1). Collects every problem
+## Parses and validates template JSON (GDD 4.1, 5.1). Collects every problem
 ## into `errors`; an unknown key is an error, not a shrug. Any key starting
 ## with "_" is an authoring note and is ignored.
 class_name TemplateLoader
@@ -28,7 +28,7 @@ static func from_dict(id: String, src: Dictionary, errors: PackedStringArray) ->
 		t.material = material
 
 	# Optional; defaults to the material's own class. Authoring it is how a
-	# material lies about its family (GDD 4.6).
+	# material lies about its family (GDD 5).
 	if src.has("colour_class"):
 		var cc: int = Materials.colour_from_name(str(src["colour_class"]))
 		if cc < 0:
@@ -81,7 +81,7 @@ static func from_dict(id: String, src: Dictionary, errors: PackedStringArray) ->
 				continue
 			t.path_overrides[BlockTemplate.path_to_key(path)] = patch
 
-	# Only checkable once the whole tree is parsed (GDD 4.7.1).
+	# Only checkable once the whole tree is parsed (GDD 4.1).
 	if t.authored_size > 0 and t.default_rule != null:
 		for p: String in t.validate_for_root_size(t.authored_size):
 			errors.append("%s: at its authored_size %d, %s" % [id, t.authored_size, p])

@@ -1,4 +1,4 @@
-## Quad-index convention (GDD 4.0.2). +Y is down. 0-based row-major:
+## Quad-index convention (GDD 1). +Y is down. 0-based row-major:
 ##   Q0 = TL   Q1 = TR
 ##   Q2 = BL   Q3 = BR
 ## Bit 0 = right, bit 1 = bottom. Locked by tests/test_quad.gd.

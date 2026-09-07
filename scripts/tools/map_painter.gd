@@ -1,11 +1,11 @@
-## THROWAWAY DEV TOOL (GDD 6, Phase 1 "terrain painter"). Paints blocks into a
+## THROWAWAY DEV TOOL: terrain painter. Paints blocks into a
 ## World and writes it as a flat block list -- the save format with no damage,
 ## so WorldSave reads and writes it unchanged.
 ##
 ##   godot --path . scenes/map_painter.tscn
 ##
 ## The ASCII dev map is the seed, read once. Free placement means a character
-## grid can no longer describe the result (GDD 4.1.0), so the painted file is
+## grid can no longer describe the result (GDD 2), so the painted file is
 ## the authored map from then on.
 ##
 ## Overlap: a stamp deletes every block it touches, whole. See PaintOps.
@@ -15,7 +15,7 @@ const TEMPLATE_DIR: String = "res://data/templates"
 const SEED_MAP: String = "res://data/maps/dev_map.json"
 const PAINTED_MAP: String = "res://data/maps/painted_map.json"
 
-## Framebuffer pixels per atom. 3 is true game scale (GDD 4.1.2).
+## Framebuffer pixels per atom. 3 is true game scale (GDD 2).
 const ZOOMS: Array[float] = [1.0, 2.0, 3.0, 4.0, 6.0, 8.0]
 const TRUE_SCALE_ZOOM: int = 2
 const PAN_ATOMS_PER_SEC: float = 220.0
@@ -203,7 +203,7 @@ func _set_size(s: int) -> void:
 	_revalidate()
 
 ## A template's override tree only makes sense under some root sizes
-## (GDD 4.7.1); refuse the brush rather than author a block that misbehaves.
+## (GDD 4.1); refuse the brush rather than author a block that misbehaves.
 func _revalidate() -> void:
 	_brush_problem = ""
 	if _template_id == "" or not templates.has(_template_id):

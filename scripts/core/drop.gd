@@ -1,4 +1,4 @@
-## What comes out when a node is mined (GDD 4.3, 5.1). Whether the node is
+## What comes out when a node is mined (GDD 3, 5.1). Whether the node is
 ## destroyed is Rule.on_break; a null Drop means it vanishes.
 class_name Drop
 extends RefCounted

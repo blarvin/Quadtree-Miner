@@ -1,4 +1,4 @@
-## One strike = one HP at one atom (GDD 4.3.2). The blow lands on the leaf
+## One strike = one HP at one atom (GDD 6.1). The blow lands on the leaf
 ## under the point; pass_down may cascade it into the child under the same
 ## point. Block-local coordinates throughout.
 class_name Strike
@@ -72,7 +72,7 @@ static func apply(root: BlockNode, template: BlockTemplate, local: Vector2i, hp:
 
 	while true:
 		node.damage += incoming
-		_reveal(node, parent, path, template)  # any damage reveals (GDD 4.5)
+		_reveal(node, parent, path, template)  # any damage reveals (GDD 4.3)
 
 		var rule: Rule = template.rule_at(path, node.size)
 		if node.damage < rule.resistance:
@@ -93,7 +93,7 @@ static func apply(root: BlockNode, template: BlockTemplate, local: Vector2i, hp:
 
 		node.subdivide()
 		if not rule.pass_down:
-			break  # surplus discarded: each level is a fresh wall (GDD 4.4.1)
+			break  # surplus discarded: each level is a fresh wall (GDD 3.2)
 		var carried: float = surplus * rule.pass_down_falloff
 		if carried <= 0.0:
 			break
@@ -109,7 +109,7 @@ static func apply(root: BlockNode, template: BlockTemplate, local: Vector2i, hp:
 
 	return res
 
-## Reveals the node struck and any sibling sharing its rule (GDD 4.6.4).
+## Reveals the node struck and any sibling sharing its rule (GDD 5.1).
 static func _reveal(node: BlockNode, parent: BlockNode, path: Array[int], template: BlockTemplate) -> void:
 	node.revealed = true
 	if parent == null:

@@ -1,4 +1,4 @@
-## Locks GDD 4.0.2: 0-based row-major, +Y down.
+## Locks GDD 1: 0-based row-major, +Y down.
 extends RefCounted
 
 var runner: SceneTree

@@ -1,12 +1,12 @@
-## Brush strokes as MapEdits (GDD 6, Phase 1 authoring). Engine-pure: no Node,
+## Brush strokes as MapEdits (authoring tool). Engine-pure: no Node,
 ## no input, so the overlap rule is testable headless.
 ##
 ## The overlap rule: a stamp deletes every block its footprint touches, whole.
 ## What a deleted block covered outside the footprint becomes void, which is a
-## legal state (GDD 4.1.1) -- paint over it if you don't want it.
+## legal state (GDD 1) -- paint over it if you don't want it.
 ##
 ## Blocks are NOT split to fit. Rules resolve by path from a block's own root
-## (GDD 4.7.2), so four size-8 roots are not the size-16 root they came from:
+## (GDD 4.2), so four size-8 roots are not the size-16 root they came from:
 ## splitting would silently rewrite the terrain's behaviour.
 class_name PaintOps
 
@@ -46,7 +46,7 @@ static func bench(world: World, origin: Vector2i, size: int,
 	return e
 
 ## The same blocks with untouched trees. Damage and reveal are play, not
-## authoring (GDD 4.6.1), so a map saved mid-dig must not carry them back in.
+## authoring (GDD 5.1), so a map saved mid-dig must not carry them back in.
 static func pristine(world: World) -> World:
 	var out := World.new()
 	out.extent = world.extent
@@ -56,7 +56,7 @@ static func pristine(world: World) -> World:
 	return out
 
 ## Authoring needs honest_dirt tellable from liar_dirt; the game's two colour
-## classes (GDD 4.6) do not tell them apart. A stable per-id tint over the real
+## classes (GDD 5) do not tell them apart. A stable per-id tint over the real
 ## class colour keeps the palette honest and the blocks distinguishable.
 static func authoring_tint(id: String, base: Color, mix: float = 0.30) -> Color:
 	var hue: float = float(absi(hash(id)) % 360) / 360.0

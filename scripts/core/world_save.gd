@@ -1,4 +1,4 @@
-## Persisting the world (GDD 5.1, 4.6.1). Saves damage, revealed, and the
+## Persisting the world (GDD 7, 4.6.1). Saves damage, revealed, and the
 ## tree's shape. Node size is not saved (derived from depth); rules are not
 ## saved (read from the template). An untouched node saves as {}.
 class_name WorldSave
@@ -91,7 +91,7 @@ static func _node_to(node: BlockNode) -> Dictionary:
 		out[K_CHILDREN] = kids
 	return out
 
-## `size` is passed down, never read from the file (GDD 5.2).
+## `size` is passed down, never read from the file (GDD 7).
 static func _node_from(src: Variant, size: int) -> BlockNode:
 	var node := BlockNode.new(size)
 	if typeof(src) != TYPE_DICTIONARY:

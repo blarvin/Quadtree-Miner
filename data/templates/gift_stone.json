@@ -1,5 +1,5 @@
 {
-  "_": "The gift (GDD 6). Stone with a coal core at Q1.Q2 (size 4). The core changes only the drop, so it subdivides like its siblings and fracturing shows it before it can be reached.",
+  "_": "The gift (GDD 4.3). Stone with a coal core at Q1.Q2 (size 4). The core changes only the drop, so it subdivides like its siblings and fracturing shows it before it can be reached.",
   "material": "stone",
   "display_skin": "stone_rough",
   "default_rule": { "resistance": 2, "on_break": "subdivide", "drop": null },

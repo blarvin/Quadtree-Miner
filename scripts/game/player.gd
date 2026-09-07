@@ -1,4 +1,4 @@
-## The character (GDD 3.1): an atom-stepped box. If the way is clear, move;
+## The character (GDD 6): an atom-stepped box. If the way is clear, move;
 ## if something blocks you, hit it. Position is in atoms; the parent Stage
 ## node scales atoms to pixels.
 class_name Player
@@ -17,7 +17,7 @@ extends Node2D
 
 @export_group("Tool")
 @export var strike_rate: float = 4.0   ## strikes per second while held
-@export var tool_hp: float = 1.0       ## HP per strike (GDD 4.3.1)
+@export var tool_hp: float = 1.0       ## HP per strike (GDD 3.1)
 @export var reach: int = 1             ## atoms past the box edge the tool line is drawn
 @export var scan_reverse: bool = false ## bottom-to-top / right-to-left instead
 @export var scan_restart_on_turn: bool = true
@@ -115,7 +115,7 @@ func _held_dir() -> Vector2i:
 			return _held[i]
 	return Vector2i.ZERO
 
-## The atoms just outside the box on side `dir`, in scan order (GDD 4.3.2).
+## The atoms just outside the box on side `dir`, in scan order (GDD 6.1).
 func _edge(dir: Vector2i) -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	for i: int in size:

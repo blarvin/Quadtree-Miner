@@ -1,8 +1,8 @@
 ## Draws the world in atom units (the parent Stage scales to pixels).
-## Three channels (GDD 4.1.2): colour class, block border, fracture.
-## Fractures are the tree, rendered (GDD 4.6.2): a subdivided node draws its
+## Three channels (GDD 2): colour class, block border, fracture.
+## Fractures are the tree, rendered (GDD 5.2): a subdivided node draws its
 ## full cross; a revealed leaf that would subdivide draws one as far as its
-## damage has carried it (GDD 4.9.2). Damage has no channel of its own.
+## damage has carried it (GDD 5.3). Damage has no channel of its own.
 extends Node2D
 
 @export var void_color: Color = Color(0.05, 0.05, 0.07)
@@ -10,7 +10,7 @@ extends Node2D
 	Materials.ColourClass.BROWN: Color(0.44, 0.31, 0.21),
 	Materials.ColourClass.GREY: Color(0.40, 0.41, 0.44),
 }
-## Shown once a node is revealed (GDD 4.6 layer 3).
+## Shown once a node is revealed (GDD 5 layer 3).
 @export var material_colors: Dictionary = {
 	Materials.Id.DIRT: Color(0.55, 0.38, 0.24),
 	Materials.Id.SAND: Color(0.80, 0.70, 0.40),
@@ -20,8 +20,8 @@ extends Node2D
 }
 @export var border_darken: float = 0.55
 @export var crack_color: Color = Color(0.05, 0.04, 0.04)
-@export var crack_min_alpha: float = 0.35  ## a promise just opening (GDD 4.9.1)
-## How far a crack spreads before the break, per material (GDD 4.9.2, 4.9.5).
+@export var crack_min_alpha: float = 0.35  ## a promise just opening (GDD 5.2)
+## How far a crack spreads before the break, per material (GDD 5.3, 4.9.5).
 ## 0 keeps a material silent until it breaks; 1 draws the whole cross just
 ## before it does. Untuned.
 @export var fracture_tell: Dictionary = {
@@ -73,9 +73,9 @@ func _draw_node(node: BlockNode, origin: Vector2, t: BlockTemplate, path: Array[
 	_cross(r, crack_color)
 
 ## The cross a revealed leaf would subdivide into, inked as far as its damage
-## has carried it: extent = tell x damage / resistance (GDD 4.9.2). Arms grow
+## has carried it: extent = tell x damage / resistance (GDD 5.3). Arms grow
 ## from the centre outward -- the symmetric case, which needs no impact point
-## (GDD 4.9.4).
+## (GDD 5.3).
 func _promise(r: Rect2, node: BlockNode, rule: Rule, t: BlockTemplate) -> void:
 	if rule.resistance <= 0.0:
 		return  # breaks on any damage; never sits here damaged

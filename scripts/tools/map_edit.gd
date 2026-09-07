@@ -1,8 +1,8 @@
-## One reversible change to a World's block set (GDD 6, Phase 1 authoring).
+## One reversible change to a World's block set (authoring tool).
 ## An edit is the whole undo unit: what it removed and what it added.
 ##
 ## Order matters. apply() removes before adding, revert() the mirror, so the
-## World's non-overlap assert (GDD 4.1) holds at every step.
+## World's non-overlap assert (GDD 2) holds at every step.
 class_name MapEdit
 extends RefCounted
 

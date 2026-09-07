@@ -1,7 +1,7 @@
-## Reads a hand-authored map into a World (GDD 4.1.0). The format is a
+## Reads a hand-authored map into a World (GDD 2). The format is a
 ## character grid plus a legend: one character per `cell_atoms` cell. A legend
 ## entry names a template and a block size; a size smaller than the cell tiles
-## it with several blocks (GDD 4.1.2).
+## it with several blocks (GDD 2).
 class_name MapLoader
 
 const LEGEND_KEYS: PackedStringArray = ["template", "size"]

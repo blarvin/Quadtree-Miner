@@ -1,14 +1,14 @@
 ## THROWAWAY. Delete when the real renderer lands.
 ##
 ## Draws colour class and block borders at true game scale, no fractures, no
-## player, to answer GDD 4.1.2: are block borders legible on untouched terrain?
+## player, to answer GDD 2: are block borders legible on untouched terrain?
 ## WASD/arrows pan, TAB overview, 1-4 jump to the set pieces.
 extends Node2D
 
 const TEMPLATE_DIR: String = "res://data/templates"
 const MAP_PATH: String = "res://data/maps/dev_map.json"
 
-## Framebuffer pixels per atom (GDD 6, legibility finding).
+## Framebuffer pixels per atom (GDD 2, legibility finding).
 const PX: int = 3
 const PAN_ATOMS_PER_SEC: float = 220.0
 

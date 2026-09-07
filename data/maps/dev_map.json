@@ -1,5 +1,5 @@
 {
-  "_": "Phase-0 dev map (GDD 4.1.0): 1024x1024 atoms as 64x64 cells of 16. One character per cell; a legend entry names a template and a block size. Layout is a first draft.",
+  "_": "Dev map (GDD 2): 1024x1024 atoms as 64x64 cells of 16. One character per cell; a legend entry names a template and a block size. Layout is a first draft.",
   "_landmarks": [
 	"rows 0-3    sky",
 	"rows 4-13   topsoil dirt with scattered liars",

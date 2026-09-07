@@ -1,4 +1,4 @@
-## Every size in this codebase is an edge length in atoms (GDD 4.0).
+## Every size in this codebase is an edge length in atoms (GDD 1).
 ## The atom is the grid resolution and the collision unit; no root size is special.
 class_name Atoms
 

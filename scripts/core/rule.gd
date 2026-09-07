@@ -1,17 +1,17 @@
-## What is true of the material at a node (GDD 4.3, 5.1). Never stored on a
-## node; looked up from the template by path (GDD 4.7.2).
+## What is true of the material at a node (GDD 3, 5.1). Never stored on a
+## node; looked up from the template by path (GDD 4.2).
 class_name Rule
 extends RefCounted
 
 enum OnBreak { SUBDIVIDE, MINE }
 
-## Sibling propagation (GDD 4.4.2). In the data model now; routing is Phase 2.
+## Sibling propagation (GDD 3.2). In the data model now; not routed yet (GDD 3.2).
 enum PassThrough { NONE, INLINE, LATERAL, RADIAL, DOWNWARD }
 
-var resistance: float = 1.0  ## HP threshold, not a hit count (GDD 4.3.1)
+var resistance: float = 1.0  ## HP threshold, not a hit count (GDD 3.1)
 var on_break: OnBreak = OnBreak.SUBDIVIDE
 var drop: Drop = null
-var pass_down: bool = false  ## leftover HP flows to the child under the impact (GDD 4.4.1)
+var pass_down: bool = false  ## leftover HP flows to the child under the impact (GDD 3.2)
 var pass_down_falloff: float = 1.0
 var pass_through: PassThrough = PassThrough.NONE
 var pass_through_falloff: float = 1.0
@@ -47,7 +47,7 @@ func clone() -> Rule:
 		r.set(f, get(f))
 	return r
 
-## Overrides are partial patches (GDD 4.7.1): only keys present are applied.
+## Overrides are partial patches (GDD 4.1): only keys present are applied.
 ## Values are already native (Drop objects, enum ints) from TemplateLoader.
 func patched(patch: Dictionary) -> Rule:
 	var r := clone()
@@ -59,7 +59,7 @@ func patched(patch: Dictionary) -> Rule:
 func apparent_material(block_material: Materials.Id) -> Materials.Id:
 	return drop.material if drop != null else block_material
 
-## Siblings sharing a rule reveal together (GDD 4.6.4). Drop is ignored on a
+## Siblings sharing a rule reveal together (GDD 5.1). Drop is ignored on a
 ## subdividing node because it cannot fire there.
 func equals(other: Rule) -> bool:
 	if other == null:

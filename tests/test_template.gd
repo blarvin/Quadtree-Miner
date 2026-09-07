@@ -1,4 +1,4 @@
-## Override trees: parsing, resolution order, validation (GDD 4.7.1).
+## Override trees: parsing, resolution order, validation (GDD 4.1).
 extends RefCounted
 
 var runner: SceneTree

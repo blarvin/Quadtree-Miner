@@ -1,5 +1,5 @@
 {
-  "_": "The baseline (GDD 4.5). Root resists 2 so the first strike is a look; 1 HP per level below; terminal at size 2. Vanishes.",
+  "_": "The baseline (GDD 4.3). Root resists 2 so the first strike is a look; 1 HP per level below; terminal at size 2. Vanishes.",
   "material": "dirt",
   "display_skin": "dirt_rough",
   "default_rule": { "resistance": 1, "on_break": "subdivide", "drop": null },

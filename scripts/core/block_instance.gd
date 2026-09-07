@@ -1,11 +1,11 @@
-## One placed block (GDD 4.1, 5.1). Always square; `size` is its whole extent
+## One placed block (GDD 2, 5.1). Always square; `size` is its whole extent
 ## and equals the root node's size.
 class_name BlockInstance
 extends RefCounted
 
 var origin: Vector2i  ## top-left, in atoms
 var size: int         ## edge length in atoms
-var template_id: String  ## rules are always read from here (GDD 4.7.2)
+var template_id: String  ## rules are always read from here (GDD 4.2)
 var root: BlockNode
 
 func _init(p_origin: Vector2i, p_size: int, p_template_id: String, p_root: BlockNode = null) -> void:

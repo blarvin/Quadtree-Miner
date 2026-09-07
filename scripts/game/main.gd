@@ -1,4 +1,4 @@
-## Phase-0 entry point: loads templates and the dev map, wires the player,
+## Entry point: loads templates and the dev map, wires the player,
 ## ladders, camera and HUD. Tunables are @exports on this node and on
 ## Stage/Player, Stage/Terrain, Stage/Ladders in scenes/main.tscn.
 extends Node2D
@@ -6,8 +6,8 @@ extends Node2D
 @export var template_dir: String = "res://data/templates"
 @export var map_path: String = "res://data/maps/dev_map.json"
 @export var painted_path: String = "res://data/maps/painted_map.json"  ## the painter's output
-@export var px_per_atom: int = 3                       ## GDD 4.1.2 finding
-@export var start_box: Vector2i = Vector2i(508, 56)    ## GDD 3.1.4
+@export var px_per_atom: int = 3                       ## GDD 2 finding
+@export var start_box: Vector2i = Vector2i(508, 56)    ## GDD 6.3
 @export var surface_y: int = 64                        ## depth is measured from here
 
 @onready var stage: Node2D = $Stage
@@ -25,7 +25,7 @@ func _ready() -> void:
 	var errors: PackedStringArray = []
 	var templates: Dictionary = TemplateLoader.load_dir(template_dir, errors)
 	# The painted map wins when it exists: free placement cannot be written
-	# back to a character grid (GDD 4.1.0), so once painted it is the authored map.
+	# back to a character grid (GDD 2), so once painted it is the authored map.
 	if FileAccess.file_exists(painted_path):
 		world = WorldSave.load_from_file(painted_path, templates, errors)
 	else:

@@ -1,4 +1,4 @@
-## A flat spatial index of non-overlapping blocks (GDD 4.1). No global
+## A flat spatial index of non-overlapping blocks (GDD 2). No global
 ## quadtree. Void is the absence of a block: block_at() == null is the answer.
 class_name World
 extends RefCounted
@@ -24,7 +24,7 @@ class Dig extends RefCounted:
 		return block.to_world(y.node_origin)
 
 func add(block: BlockInstance) -> void:
-	assert(find_overlap(block.rect()) == null, "blocks never overlap (GDD 4.1): %s" % block)
+	assert(find_overlap(block.rect()) == null, "blocks never overlap (GDD 2): %s" % block)
 	blocks.append(block)
 	for cell: Vector2i in _cells_of(block.rect()):
 		if not _index.has(cell):

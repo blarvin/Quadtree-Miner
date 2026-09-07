@@ -1,5 +1,5 @@
 {
-  "_": "The liar (GDD 6). Identical to honest_dirt untouched; Q2 (bottom-left) resists 8 all the way down.",
+  "_": "The liar (GDD 4.3). Identical to honest_dirt untouched; Q2 (bottom-left) resists 8 all the way down.",
   "material": "dirt",
   "display_skin": "dirt_rough",
   "default_rule": { "resistance": 1, "on_break": "subdivide", "drop": null },

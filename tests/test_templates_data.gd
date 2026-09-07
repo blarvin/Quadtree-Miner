@@ -1,4 +1,4 @@
-## The authored Phase-0 templates behave as GDD 6 describes.
+## The authored templates behave as GDD 4.3 describes.
 extends RefCounted
 
 var runner: SceneTree

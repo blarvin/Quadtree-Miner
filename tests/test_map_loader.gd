@@ -1,4 +1,4 @@
-## The dev map and the map format (GDD 4.1.0, 4.1.2).
+## The dev map and the map format (GDD 2, 4.1.2).
 extends RefCounted
 
 var runner: SceneTree
@@ -40,7 +40,7 @@ func test_the_sky_is_void() -> void:
 	runner.check(_map().block_at(_at(10, 2)) == null, "row 2 is sky")
 	runner.check(_map().block_at(_at(10, 4)) != null, "row 4 is ground")
 
-## A legend entry smaller than its cell tiles the cell (GDD 4.1.2). Rubble size
+## A legend entry smaller than its cell tiles the cell (GDD 2). Rubble size
 ## is an authoring dial, so the expectation comes from the map, not from here.
 func test_a_sub_cell_legend_entry_tiles_its_cell() -> void:
 	var w: World = _map()

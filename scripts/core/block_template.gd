@@ -1,4 +1,4 @@
-## A sparse override tree (GDD 4.7.1). Two kinds of key:
+## A sparse override tree (GDD 4.1). Two kinds of key:
 ##   "Q1.Q2"  position -- applies to that node and everything below it
 ##   "size:2" physical size -- applies to any node of that edge, no inheritance
 ## Resolution, later wins field by field:
@@ -15,7 +15,7 @@ var colour_class: Materials.ColourClass = Materials.ColourClass.BROWN
 var display_skin: String = ""
 ## The root size the override tree was written for; 0 when unstated. Authoring
 ## metadata, never a rule -- an override tree is only meaningful under some
-## root sizes (GDD 4.7.1), and this records which one the author meant.
+## root sizes (GDD 4.1), and this records which one the author meant.
 var authored_size: int = 0
 var default_rule: Rule = null
 var path_overrides: Dictionary = {}  ## canonical path key -> patch
@@ -74,7 +74,7 @@ func rule_at(path: Array[int], size: int) -> Rule:
 	return r
 
 ## Checks that only make sense once the template is bound to a block size:
-## paths deeper than the atom, and drops larger than the node (GDD 7).
+## paths deeper than the atom, and drops larger than the node (GDD 4.1).
 func validate_for_root_size(root_size: int) -> PackedStringArray:
 	var problems: PackedStringArray = []
 	if not Atoms.is_valid_size(root_size):

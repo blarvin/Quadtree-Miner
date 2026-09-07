@@ -1,4 +1,4 @@
-## Placed ladder units (GDD 3.1.1): 8x8 entities on the atom grid, not blocks.
+## Placed ladder units (GDD 6.2): 8x8 entities on the atom grid, not blocks.
 ## Engine-pure so it can be tested and saved.
 class_name Ladders
 extends RefCounted

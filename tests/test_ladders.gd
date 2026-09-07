@@ -1,4 +1,4 @@
-## Ladder placement and stacking (GDD 3.1.1).
+## Ladder placement and stacking (GDD 6.2).
 extends RefCounted
 
 var runner: SceneTree

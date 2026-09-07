@@ -1,4 +1,4 @@
-## THROWAWAY DEV TOOL (GDD 6, Phase 1 "terrain painter"), living inside the
+## THROWAWAY DEV TOOL: terrain painter, living inside the
 ## running game: keys move and dig, the mouse edits, one World underneath.
 ##
 ## A child of Stage, so its coordinates are atoms and the camera is already
@@ -113,7 +113,7 @@ func _origin() -> Vector2i:
 func _footprint() -> Rect2i:
 	return PaintOps.footprint(_origin(), _size, tilings[_tiling])
 
-## Erasing around the character is fine; burying it is not (GDD 3.1 has no
+## Erasing around the character is fine; burying it is not (GDD 6 has no
 ## rule for a box that starts inside rock).
 func _blocked_by_player(fp: Rect2i) -> bool:
 	return player != null and fp.intersects(player.rect())
@@ -193,7 +193,7 @@ func _set_size(s: int) -> void:
 	_size = s
 	_revalidate()
 
-## An override tree is only meaningful under some root sizes (GDD 4.7.1).
+## An override tree is only meaningful under some root sizes (GDD 4.1).
 func _revalidate() -> void:
 	_problem = ""
 	if _template_id == "" or not templates.has(_template_id):
