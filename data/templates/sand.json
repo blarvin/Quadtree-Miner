@@ -1,9 +1,16 @@
 {
-  "_": "The trap (GDD 4.3). 0.25 resistance with full pass_down: one 1 HP strike breaks exactly four levels and opens a shaft. Untuned.",
+  "_": "The collapse (GDD 4.4). Floor at size 8: one strike opens the block and the quarter under the impact falls whole. Cannot be tunnelled finer than 64 atoms. Untuned.",
   "material": "sand",
   "display_skin": "sand_loose",
-  "default_rule": { "resistance": 0.25, "on_break": "subdivide", "drop": null, "pass_down": true, "pass_down_falloff": 1.0 },
+  "authored_size": 16,
+  "default_rule": {
+    "resistance": 0.5,
+    "on_break": "mine",
+    "drop": null,
+    "pass_down": true,
+    "pass_down_falloff": 1.0
+  },
   "overrides": {
-    "size:2": { "on_break": "mine", "drop": null }
+    "size:16": { "resistance": 0.25, "on_break": "subdivide" }
   }
 }

@@ -61,11 +61,15 @@ func test_the_gift_shows_its_coal_before_it_can_be_reached() -> void:
 	runner.check(res.mined and res.yields.size() == 1 and res.yields[0].drop.material == Materials.Id.COAL,
 		"digging into it pays coal")
 
-func test_sand_collapses_under_one_strike() -> void:
+func test_sand_falls_in_quarters() -> void:
+	var t: BlockTemplate = _tpl("sand")
 	var root := BlockNode.new(16)
-	var res: Strike.Result = _dig(root, _tpl("sand"), Vector2i.ZERO, 1)
-	runner.check_eq(res.broke, [16, 8, 4, 2] as Array[int], "one strike bores through")
-	runner.check(root.children[Quad.TL].children[Quad.TL].is_void_at(Quad.TL), "leaving a shaft")
+	var res: Strike.Result = _dig(root, t, Vector2i.ZERO, 1)
+	runner.check_eq(res.broke, [16, 8] as Array[int], "one strike opens the block and the quarter under it")
+	runner.check(res.mined and root.is_void_at(Quad.TL), "64 atoms in one bite")
+	runner.check(_dig(root, t, Vector2i(8, 0), 1).mined, "each further quarter goes in one strike")
+	runner.check(root.children[Quad.TR] == null and root.children[Quad.BL] != null,
+		"and only the quarter struck")
 
 func test_the_boulder_cracks_once_and_goes_terminal() -> void:
 	var t: BlockTemplate = _tpl("hard_stone")

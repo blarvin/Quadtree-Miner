@@ -147,12 +147,96 @@ The same input must produce different experiences:
    Strike each quadrant once: three crumble, one does not.
 3. **gift_stone** — stone with a coal core at `Q1.Q2` that changes only the
    drop, so fracturing shows the coal before it can be reached.
-4. **sand** — `pass_down: true`, resistance 0.25: one strike bores a shaft
-   through the whole block and you fall.
+4. **sand** — floor at size 8. One strike opens the block and drops the
+   quarter under the impact whole: 64 atoms in one bite. It cannot be
+   tunnelled, only emptied.
 5. **hard_stone** — twenty strikes with nothing happening, then one clean
    cross, then terminal at size 8.
 6. **stone** — grey fill. Painted at size 4 it is rubble; same colour class
    as hard stone, so only the border says the wall is expensive.
+
+### 4.4 The space of templates
+
+Templates are cheap to write and most of them are not worth playing. These
+are the axes a template may vary, and the seams where the space divides into
+kinds rather than degrees.
+
+#### Axes
+
+| Axis | Authored as | What it is |
+| --- | --- | --- |
+| **Floor** | the size carrying `on_break: mine` | the grain of the hole — the smallest bite that can be taken |
+| **Cost curve** | `resistance` per `size:N` | flat grind, front-loaded look, or back-loaded surprise |
+| **Friability** | `resistance` below tool HP, with `pass_down` | whether a blow stops at the wall or falls through it |
+| **Contents** | path overrides (`Q1.Q2`) | that this block has an inside |
+| **Placement** | the block's size on the map (§2) | the same template as different play, at no cost |
+
+**Floor is the tunnelling lever.** A floor of 2 lets a corridor be cut to the
+body; a floor of 8 means every bite is 64 atoms, so the material cannot be
+threaded at all, only cleared. Whether terrain is negotiated or erased is
+decided here, not by resistance.
+
+#### Two seams
+
+**Terminal at the root is not a shallow tree — it is a tile.** A block that
+never subdivides is outside the system being tested. That is its use: it makes
+the first subdividing block a discovery, so the upper world can be tiles and
+the quadtree can be what you find by going down.
+
+**Size keys are physics; path keys are contents.** A `size:N` override says how
+the substance behaves at scale: it is a curve, it does not inherit, and it is
+what makes a material a material. A quad-path override says what is inside
+*this* block: it is positional, it inherits downward, it is an object. A
+template is one material plus its contents, and the two are authored
+differently.
+
+#### The 4× law
+
+Each level of depth roughly quadruples the cost of clearing, because there are
+four times as many nodes to break. Strikes with a 1 HP tool to empty one
+size-16 block, against strikes to cut an 8-atom corridor through it:
+
+| Template | Floor | Clear | Tunnel |
+| --- | --- | --- | --- |
+| `easy_dirt` | root | 3 | 3 |
+| `sand` | 8 | 4 | 2 |
+| `mid_dirt` | 8 | 5 | 3 |
+| `honest_dirt` | 2 | 86 | 44 |
+| `hard_stone` | 8 | 100 | 60 |
+| `stone` | 2 | 171 | 87 |
+| `liar_dirt` | 2 | 233 | 44 top, 191 bottom |
+
+Two readings. First, the range is two orders of magnitude, and it is bought
+almost entirely with depth: `stone` and `honest_dirt` differ by 2× in
+resistance and 2× in cost, while `mid_dirt` and `honest_dirt` differ by one
+level of floor and 17× in cost. Second, `liar_dirt` is the only row where the
+tunnel number depends on *where* you cut. That column is the system's whole
+claim: hardness that is a property of place, not of a number.
+
+The tool's strike rate is the exchange rate between depth and player time, and
+with no upgrades in scope (§Scope) it is a constant. So deep terrain is not
+cleared, it is threaded — and the floor of the deep materials is what decides
+whether threading is possible.
+
+#### Materials are vocabulary; templates are grammar
+
+A material is a colour and a name; the colour class above it is deliberately
+lossy (§5). A new material buys a word, a new template buys a sentence.
+**Five materials are enough.** The scarce resource is not colours but lessons
+the player can hold: three or four behaviours per depth band, so that "brown,
+this deep, means X" is a proposition that can be learned — and then violated.
+
+**Two templates that differ only in speed are one template.** If the player
+cannot name the difference without counting strikes, the difference is not
+there. Separation must come from floor, contents, or friability.
+
+#### What a block may confess
+
+Before the first strike: colour class and border size. Nothing else. Reveal is
+only ever by strike (§5.1), and behaviour is disclosed only through the
+fracture channel — never by tint, never by a colour per template. Fractures
+are the third read that no tile game has, and an editor must not let an author
+route information around them.
 
 ## 5. Reveal and fractures
 
