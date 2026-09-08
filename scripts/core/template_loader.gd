@@ -143,6 +143,8 @@ static func _parse_patch(src: Dictionary, ctx: String, errors: PackedStringArray
 
 	if patch.get("on_break") == Rule.OnBreak.SUBDIVIDE and patch.get("drop") != null:
 		errors.append("%s: on_break 'subdivide' yields children, not a drop" % ctx)
+	if patch.get("on_break") == Rule.OnBreak.SHATTER and patch.get("drop") != null:
+		errors.append("%s: on_break 'shatter' yields children, not a drop" % ctx)
 
 	if src.has("pass_down"):
 		if typeof(src["pass_down"]) != TYPE_BOOL:

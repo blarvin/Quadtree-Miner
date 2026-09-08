@@ -38,6 +38,30 @@ const HIDDEN_CORE: String = """
 }
 """
 
+const SHATTERS: String = """
+{
+  "material": "sand",
+  "default_rule": { "resistance": 1, "on_break": "shatter", "drop": null },
+  "overrides": {
+    "Q3": { "resistance": 5, "on_break": "mine", "drop": null },
+    "size:1": { "resistance": 0.05, "on_break": "mine" }
+  }
+}
+"""
+
+func test_shatter_fractures_to_the_floor_and_absorbs_the_blow() -> void:
+	var t: BlockTemplate = _template(SHATTERS)
+	var root := BlockNode.new(16)
+	var res: Strike.Result = Strike.apply(root, t, Vector2i.ZERO, 1.0)
+	runner.check(not res.mined, "one strike, nothing mined")
+	# The atoms cost 0.05: any surplus at all would have taken some with it.
+	runner.check_eq(root.node_count(), 257, "the whole tree stands, bar the terminal quarter")
+	var core: BlockNode = root.children[Quad.BR]
+	runner.check(core.is_leaf() and core.revealed, "a terminal child is exposed, not opened")
+	runner.check(not root.children[Quad.TL].is_leaf(), "its siblings fractured to the atom")
+	runner.check(root.children[Quad.TL].children[Quad.BR].children[Quad.BR].revealed,
+		"and a shatter tells you everything it opened")
+
 func test_the_gdd_4_5_five_strike_sequence() -> void:
 	var t: BlockTemplate = _template(PROTOTYPE)
 	var root := BlockNode.new(16)

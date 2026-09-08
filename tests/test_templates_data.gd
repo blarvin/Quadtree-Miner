@@ -61,28 +61,26 @@ func test_the_gift_shows_its_coal_before_it_can_be_reached() -> void:
 	runner.check(res.mined and res.yields.size() == 1 and res.yields[0].drop.material == Materials.Id.COAL,
 		"digging into it pays coal")
 
-func test_sand_collapses_around_the_blow() -> void:
+func test_sand_shatters_whole_then_goes_whole() -> void:
 	var t: BlockTemplate = _tpl("sand")
 	var root := BlockNode.new(16)
-	var res: Strike.Result = Strike.apply(root, t, Vector2i(8, 8), 1.0)
-	runner.check(res.hit and not res.block_destroyed, "one strike, and the block is still there")
-	runner.check(root.children[Quad.TL] != null and not root.children[Quad.TL].is_leaf(),
-		"every quarter shattered, not just the one struck")
-	var left: int = 0
-	for y: int in 16:
-		for x: int in 16:
-			if Strike.site_at(root, Vector2i(x, y)).node != null:
-				left += 1
-	runner.check(left < 32, "and the collapse swept outward: %d of 256 atoms left" % left)
-	runner.check(left > 0, "with a residue in the far corners")
+	var first: Strike.Result = Strike.apply(root, t, Vector2i(8, 8), 1.0)
+	runner.check(not first.mined, "the first strike is spent fracturing")
+	runner.check_eq(root.node_count(), 341, "instantiating the whole tree")
+	runner.check_eq(_standing(root), 256, "256 grains, every one of them stable")
+	runner.check(root.children[Quad.BR].children[Quad.BR].revealed, "the far corner on show")
+	var second: Strike.Result = Strike.apply(root, t, Vector2i.ZERO, 1.0)
+	runner.check(second.mined and _standing(root) == 0,
+		"and the next strike, landed in the far corner, takes all 256 with it")
 
-func test_pass_through_stops_at_the_block_edge() -> void:
-	var t: BlockTemplate = _tpl("sand")
-	var a := BlockNode.new(16)
-	Strike.apply(a, t, Vector2i(15, 15), 1.0)  # the far corner: the wave pushes outward
-	runner.check(a.damage > 0.0, "the struck block took it")
-	var b := BlockNode.new(16)
-	runner.check_eq(b.damage, 0.0, "a block never spreads into its neighbours")
+## Atoms still covered by the block: what collision would call solid.
+func _standing(root: BlockNode) -> int:
+	var n: int = 0
+	for y: int in root.size:
+		for x: int in root.size:
+			if Strike.site_at(root, Vector2i(x, y)).node != null:
+				n += 1
+	return n
 
 func test_the_boulder_cracks_once_and_goes_terminal() -> void:
 	var t: BlockTemplate = _tpl("hard_stone")

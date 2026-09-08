@@ -67,8 +67,20 @@ Its **rule** is not stored; it is looked up from the template by quad-path
 - `mine` → the node is destroyed. `drop: null` means it vanishes; otherwise
   it yields `(node.size / drop.size)²` units, added to the counter
   immediately. No pickup entities.
+- `shatter` → the whole subtree is fractured in one act: every descendant
+  instantiated and revealed, down to wherever its own rule turns terminal.
+  **The blow is absorbed.** A shatter has no surplus to pass anywhere, and
+  that is what makes it exactly one strike rather than a tuning problem.
 
-`mine` is terminal: children are never instantiated.
+The first two act on a node; `shatter` acts on a subtree. It is the only way
+to reach the floor of a block in a single strike without mining anything on
+the way, and it is what a material does when it fails as a mass rather than
+at a point.
+
+`mine` is terminal: children are never instantiated. A shatter stops at a
+terminal child — exposed, but not opened, because it has no inside to show
+(§5.2). It reveals everything it does open, so **do not hide a core in a
+shattering material**; it is a loud property, not a subtle one.
 
 Unstruck siblings keep their own damage at zero, so digging is a wandering
 front through the tree. An unstruck block is **one node in memory**.
@@ -165,10 +177,11 @@ The same input must produce different experiences:
    Strike each quadrant once: three crumble, one does not.
 3. **gift_stone** — stone with a coal core at `Q1.Q2` that changes only the
    drop, so fracturing shows the coal before it can be reached.
-4. **sand** — the trap. Cheap all the way to size 2, where it mines with a
-   radial `pass_through`: one strike shatters the whole block and the
-   collapse sweeps outward from the impact, taking nearly all of it. Sand is
-   not dug, it is triggered.
+4. **sand** — the trap, in two beats. The first strike shatters the block to
+   its 256 atoms and is spent doing it: every grain stands, the whole
+   fracture on show. The second, landed anywhere in it, costs 0.05 and hands
+   the rest sideways through a radial `pass_through`, so the block goes at
+   once. Sand is not dug, it is triggered.
 5. **hard_stone** — twenty strikes with nothing happening, then one clean
    cross, then terminal at size 8.
 6. **stone** — grey fill. Painted at size 4 it is rubble; same colour class
@@ -218,17 +231,18 @@ size-16 block, against strikes to cut an 8-atom corridor through it:
 | Template | Floor | Clear | Tunnel |
 | --- | --- | --- | --- |
 | `easy_dirt` | root | 3 | 3 |
-| `sand` | 2 | 1 | 1 |
+| `sand` | 1 | 2 | 2 |
 | `mid_dirt` | 8 | 5 | 3 |
 | `honest_dirt` | 2 | 86 | 44 |
 | `hard_stone` | 8 | 100 | 60 |
 | `stone` | 2 | 171 | 87 |
 | `liar_dirt` | 2 | 233 | 44 top, 191 bottom |
 
-`sand` is the row that is not really a cost: one strike triggers the whole
-block, and a blow landed off-centre leaves a residue of a dozen atoms that
-takes one more. It is the only material whose price does not scale with what
-you want from it.
+`sand` is the row that is not really a cost: two strikes take a block from
+whole to gone, wherever they land, and neither of them is a dig. It is the
+only material whose price does not scale with what you want from it — and
+the only one that cannot be tunnelled *because* it is cheap, since the second
+strike takes the room with it whether or not that is what you wanted.
 
 Two readings. First, the range is two orders of magnitude, and it is bought
 almost entirely with depth: `stone` and `honest_dirt` differ by 2× in

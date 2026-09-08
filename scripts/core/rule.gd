@@ -3,7 +3,9 @@
 class_name Rule
 extends RefCounted
 
-enum OnBreak { SUBDIVIDE, MINE }
+## SHATTER acts on the subtree, not the node: fracture to the floor and
+## absorb the blow (GDD 3).
+enum OnBreak { SUBDIVIDE, MINE, SHATTER }
 
 ## Sibling propagation (GDD 3.2). In the data model now; not routed yet (GDD 3.2).
 enum PassThrough { NONE, INLINE, LATERAL, RADIAL, DOWNWARD }
@@ -25,6 +27,7 @@ const FIELDS: PackedStringArray = [
 const ON_BREAK_NAMES: Dictionary = {
 	OnBreak.SUBDIVIDE: "subdivide",
 	OnBreak.MINE: "mine",
+	OnBreak.SHATTER: "shatter",
 }
 
 const PASS_THROUGH_NAMES: Dictionary = {

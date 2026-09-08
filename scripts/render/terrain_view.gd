@@ -62,7 +62,7 @@ func _draw_node(node: BlockNode, origin: Vector2, t: BlockTemplate, path: Array[
 			fill = material_colors[rule.apparent_material(t.material)]
 		draw_rect(r, fill, true)
 		_outline(r, bounds, border)
-		if node.revealed and node.size > 1 and rule.on_break == Rule.OnBreak.SUBDIVIDE:
+		if node.revealed and node.size > 1 and rule.on_break != Rule.OnBreak.MINE:
 			_promise(r, node, rule, t)
 		return
 	for q: int in 4:

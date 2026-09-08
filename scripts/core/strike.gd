@@ -86,6 +86,9 @@ static func apply(root: BlockNode, template: BlockTemplate, local: Vector2i, hp:
 		if node.damage < rule.resistance:
 			continue
 		var surplus: float = node.damage - rule.resistance
+		if rule.on_break == Rule.OnBreak.SHATTER and node.size > 1:
+			_shatter(node, template, site.path, res)
+			continue  # a shatter has no surplus: the blow is spent fracturing
 		res.broke.append(node.size)
 
 		# An atom cannot subdivide, so a break at size 1 destroys it regardless.
@@ -109,6 +112,26 @@ static func apply(root: BlockNode, template: BlockTemplate, local: Vector2i, hp:
 		_spread(queue, root, site, rule, surplus, blow)
 
 	return res
+
+## Fracture a subtree to its floor (GDD 3): every descendant instantiated
+## until its own rule turns terminal, and revealed -- you watched it come
+## apart, so nothing about the structure is still hidden. A terminal child is
+## exposed but not opened; it has no inside to show (GDD 5.2).
+static func _shatter(node: BlockNode, template: BlockTemplate, path: Array[int],
+		res: Result) -> void:
+	if node.size == 1 or template.rule_at(path, node.size).on_break == Rule.OnBreak.MINE:
+		return
+	if node.is_leaf():
+		node.subdivide()
+	res.broke.append(node.size)
+	for q: int in 4:
+		var child: BlockNode = node.children[q]
+		if child == null:
+			continue
+		child.revealed = true
+		var child_path: Array[int] = path.duplicate()
+		child_path.append(q)
+		_shatter(child, template, child_path, res)
 
 ## The blow's point, pulled inside a node the wave has reached sideways, so
 ## every node passes its surplus down toward the impact rather than nowhere.
