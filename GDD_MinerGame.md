@@ -40,6 +40,18 @@ Values marked *(untuned)* are starting guesses.
 - **Block size is an authoring dial that costs no new templates.** The same
   template at size 16 and size 4 is different play. Size must read before the
   first strike, so block borders are drawn on untouched terrain.
+- **A block boundary is the edge of a wave.** `pass_through` never crosses one
+  (§3.2), so the same ground painted at a smaller size is not a subdivision of
+  the larger one — it is a different material. `sand` is 2 strikes as one B16
+  and 8 as four B8s: four separate collapses, each stopping dead at its seam,
+  each revealing only itself. Painting partitions propagation and information,
+  not just the ground.
+- Which is why a **template made of templates** is not wanted. Everything it
+  could compose, placement already composes, and honestly — the border draws.
+  The one thing it would add is hiding the seams until the first strike, and
+  that is the only part worth refusing. Rules stay looked up by path from one
+  template (§4.2). A stamp that places a 2 × 2 of blocks in a click belongs in
+  the editor, where it is a placement macro and not a new kind of thing.
 - Three visual channels that must not fight: **colour class** (material
   family), **block border** (size), **fracture** (internal structure).
 - Scale: 640 × 360 framebuffer, integer-scaled, **3 framebuffer px per atom**.
@@ -336,6 +348,15 @@ A cross has four states:
 | **Never** | terminal node, or an atom | no cross at any damage |
 | **Promise** | revealed leaf that would subdivide | the cross at `extent` (§5.3) |
 | **Fact** | node has subdivided | the full cross, permanently |
+
+**A Fact says nothing about what is under it.** A node fractured into four
+terminal children draws the same cross as one fractured into four that will
+keep dividing, so `mid_dirt` and `honest_dirt` are indistinguishable until
+the next strike answers it. That is the channel's real gap, and the answer is
+already in hand: whether a child is terminal is `on_break` read from the
+template, derived per frame and stored nowhere, so a **last division** can be
+drawn differently from a continuing one without a field and without breaking
+this section. The next work on fractures starts here.
 
 ### 5.3 Extent is damage, drawn
 
