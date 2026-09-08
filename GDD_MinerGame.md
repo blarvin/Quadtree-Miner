@@ -85,16 +85,34 @@ tools are tools with HP 1.
   child under the impact point, potentially cascading size 16 → atom in one
   strike. False discards the surplus and each level is a fresh wall. Only
   expresses itself when a tool overdelivers.
-- **`pass_through`** (+ falloff): leftover HP flows to siblings. In the data
-  model; not routed yet.
+- **`pass_through`** (+ falloff): leftover HP flows outward from the node that
+  broke — mined or subdivided, either way. Neighbours are **spatial, not
+  sibling indices**: one node-width out from the node's centre, delivered to
+  whatever owns that point, at whatever size that turns out to be. A wave
+  therefore crosses parents instead of rattling around inside one; sibling
+  bit-flips would trap a collapse in a box four nodes wide. It never leaves
+  the block (§2).
 
-  | Pattern | Reads as | Siblings |
+  | Pattern | Reads as | Goes |
   | --- | --- | --- |
   | `none` | brittle in place | — |
-  | `inline` | grain | flip the bit for the blow's axis |
-  | `lateral` | shattering | flip bit 0 |
-  | `radial` | crumbling outward | all three, falloff by distance |
-  | `downward` | collapsing | set bit 1 |
+  | `inline` | grain | both ways along the blow's axis |
+  | `lateral` | shattering | left and right |
+  | `radial` | crumbling outward | all eight; a diagonal is a step further, so falloff twice |
+  | `downward` | collapsing | down |
+
+  Each neighbour is sent a **copy** of the surplus, never a share, so a
+  pattern's reach does not depend on how many neighbours happen to exist and
+  `falloff` is the only damping. A node takes one delivery per strike and
+  breaks at most once, so the block's own node count bounds the wave — it
+  needs no iteration cap.
+
+**A wave loads leaves sparsely.** `pass_through` spreads at the size that
+broke, while `pass_down` reaches one child. A strike that fractures a block
+down to size 2 therefore leaves damage on a handful of its cells, not on all
+of them. So a material cannot be loaded to the brink everywhere by one blow
+and collapsed by the next: **wholesale collapse has to happen in the strike
+that starts it**, or not at all.
 
 Most of the world should be pass-down fill a decent tool knifes through; a
 few walls should be pass-down-false grinds. Target roughly 90/10. *(untuned)*
@@ -147,9 +165,10 @@ The same input must produce different experiences:
    Strike each quadrant once: three crumble, one does not.
 3. **gift_stone** — stone with a coal core at `Q1.Q2` that changes only the
    drop, so fracturing shows the coal before it can be reached.
-4. **sand** — floor at size 8. One strike opens the block and drops the
-   quarter under the impact whole: 64 atoms in one bite. It cannot be
-   tunnelled, only emptied.
+4. **sand** — the trap. Cheap all the way to size 2, where it mines with a
+   radial `pass_through`: one strike shatters the whole block and the
+   collapse sweeps outward from the impact, taking nearly all of it. Sand is
+   not dug, it is triggered.
 5. **hard_stone** — twenty strikes with nothing happening, then one clean
    cross, then terminal at size 8.
 6. **stone** — grey fill. Painted at size 4 it is rubble; same colour class
@@ -167,7 +186,7 @@ kinds rather than degrees.
 | --- | --- | --- |
 | **Floor** | the size carrying `on_break: mine` | the grain of the hole — the smallest bite that can be taken |
 | **Cost curve** | `resistance` per `size:N` | flat grind, front-loaded look, or back-loaded surprise |
-| **Friability** | `resistance` below tool HP, with `pass_down` | whether a blow stops at the wall or falls through it |
+| **Friability** | `resistance` below tool HP, with `pass_down` / `pass_through` | whether a blow stops at the wall, falls through it, or takes the room with it |
 | **Contents** | path overrides (`Q1.Q2`) | that this block has an inside |
 | **Placement** | the block's size on the map (§2) | the same template as different play, at no cost |
 
@@ -199,12 +218,17 @@ size-16 block, against strikes to cut an 8-atom corridor through it:
 | Template | Floor | Clear | Tunnel |
 | --- | --- | --- | --- |
 | `easy_dirt` | root | 3 | 3 |
-| `sand` | 8 | 4 | 2 |
+| `sand` | 2 | 1 | 1 |
 | `mid_dirt` | 8 | 5 | 3 |
 | `honest_dirt` | 2 | 86 | 44 |
 | `hard_stone` | 8 | 100 | 60 |
 | `stone` | 2 | 171 | 87 |
 | `liar_dirt` | 2 | 233 | 44 top, 191 bottom |
+
+`sand` is the row that is not really a cost: one strike triggers the whole
+block, and a blow landed off-centre leaves a residue of a dozen atoms that
+takes one more. It is the only material whose price does not scale with what
+you want from it.
 
 Two readings. First, the range is two orders of magnitude, and it is bought
 almost entirely with depth: `stone` and `honest_dirt` differ by 2× in

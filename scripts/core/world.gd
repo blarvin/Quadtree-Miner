@@ -84,14 +84,14 @@ func node_count() -> int:
 		n += b.root.node_count()
 	return n
 
-## Deliver `hp` at a world atom.
-func strike(atom: Vector2i, hp: float) -> Dig:
+## Deliver `hp` at a world atom. `blow` is the tool's direction (GDD 3.2).
+func strike(atom: Vector2i, hp: float, blow: Vector2i = Vector2i.ZERO) -> Dig:
 	var dig := Dig.new()
 	var b: BlockInstance = block_at(atom)
 	if b == null:
 		return dig
 	dig.block = b
-	dig.result = Strike.apply(b.root, template_for(b), b.to_local(atom), hp)
+	dig.result = Strike.apply(b.root, template_for(b), b.to_local(atom), hp, blow)
 	if dig.result.block_destroyed:
 		remove(b)
 		dig.block_removed = true

@@ -61,15 +61,28 @@ func test_the_gift_shows_its_coal_before_it_can_be_reached() -> void:
 	runner.check(res.mined and res.yields.size() == 1 and res.yields[0].drop.material == Materials.Id.COAL,
 		"digging into it pays coal")
 
-func test_sand_falls_in_quarters() -> void:
+func test_sand_collapses_around_the_blow() -> void:
 	var t: BlockTemplate = _tpl("sand")
 	var root := BlockNode.new(16)
-	var res: Strike.Result = _dig(root, t, Vector2i.ZERO, 1)
-	runner.check_eq(res.broke, [16, 8] as Array[int], "one strike opens the block and the quarter under it")
-	runner.check(res.mined and root.is_void_at(Quad.TL), "64 atoms in one bite")
-	runner.check(_dig(root, t, Vector2i(8, 0), 1).mined, "each further quarter goes in one strike")
-	runner.check(root.children[Quad.TR] == null and root.children[Quad.BL] != null,
-		"and only the quarter struck")
+	var res: Strike.Result = Strike.apply(root, t, Vector2i(8, 8), 1.0)
+	runner.check(res.hit and not res.block_destroyed, "one strike, and the block is still there")
+	runner.check(root.children[Quad.TL] != null and not root.children[Quad.TL].is_leaf(),
+		"every quarter shattered, not just the one struck")
+	var left: int = 0
+	for y: int in 16:
+		for x: int in 16:
+			if Strike.site_at(root, Vector2i(x, y)).node != null:
+				left += 1
+	runner.check(left < 32, "and the collapse swept outward: %d of 256 atoms left" % left)
+	runner.check(left > 0, "with a residue in the far corners")
+
+func test_pass_through_stops_at_the_block_edge() -> void:
+	var t: BlockTemplate = _tpl("sand")
+	var a := BlockNode.new(16)
+	Strike.apply(a, t, Vector2i(15, 15), 1.0)  # the far corner: the wave pushes outward
+	runner.check(a.damage > 0.0, "the struck block took it")
+	var b := BlockNode.new(16)
+	runner.check_eq(b.damage, 0.0, "a block never spreads into its neighbours")
 
 func test_the_boulder_cracks_once_and_goes_terminal() -> void:
 	var t: BlockTemplate = _tpl("hard_stone")

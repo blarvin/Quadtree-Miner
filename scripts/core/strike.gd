@@ -22,7 +22,7 @@ class Yield extends RefCounted:
 class Result extends RefCounted:
 	var hit: bool = false            ## false: the point was already mined out
 	var broke: Array[int] = []       ## sizes broken, in cascade order
-	var mined: bool = false          ## the last break was terminal
+	var mined: bool = false          ## some break in the wave was terminal
 	var yields: Array[Yield] = []
 	var block_destroyed: bool = false  ## the root was mined; World must drop the block
 
@@ -51,32 +51,40 @@ static func site_at(root: BlockNode, local: Vector2i) -> Site:
 		s.node = child
 	return s
 
-## Deliver `hp` at block-local atom `local`.
-static func apply(root: BlockNode, template: BlockTemplate, local: Vector2i, hp: float) -> Result:
+## Deliver `hp` at block-local atom `local`. `blow` is the direction the tool
+## travelled; only the `inline` spread pattern reads it (GDD 3.2).
+static func apply(root: BlockNode, template: BlockTemplate, local: Vector2i, hp: float,
+		blow: Vector2i = Vector2i.ZERO) -> Result:
 	assert(hp > 0.0, "a strike delivers HP")
 	assert(Rect2i(Vector2i.ZERO, Vector2i(root.size, root.size)).has_point(local),
 		"impact point %s is outside a size-%d block" % [local, root.size])
 
 	var res := Result.new()
-	var site: Site = site_at(root, local)
-	if site.node == null:
+	if site_at(root, local).node == null:
 		return res
 	res.hit = true
 
-	var node: BlockNode = site.node
-	var parent: BlockNode = site.parent
-	var quad: int = site.quad
-	var path: Array[int] = site.path
-	var origin: Vector2i = site.origin
-	var incoming: float = hp
+	# The blow lands at one point (GDD 6.1); what the material does with the
+	# surplus is a wave (GDD 3.2). A delivery is a point and an amount, resolved
+	# against the tree as it stands when it is taken up. Each node takes one
+	# delivery per strike and breaks at most once, so the block's own node count
+	# bounds the wave -- no iteration cap is needed.
+	var seen: Dictionary = {}
+	var queue: Array[Array] = [[local, hp]]
+	while not queue.is_empty():
+		var job: Array = queue.pop_front()
+		var site: Site = site_at(root, job[0])
+		if site.node == null or seen.has(site.node):
+			continue
+		seen[site.node] = true
 
-	while true:
-		node.damage += incoming
-		_reveal(node, parent, path, template)  # any damage reveals (GDD 4.3)
+		var node: BlockNode = site.node
+		node.damage += job[1]
+		_reveal(node, site.parent, site.path, template)  # any damage reveals (GDD 4.3)
 
-		var rule: Rule = template.rule_at(path, node.size)
+		var rule: Rule = template.rule_at(site.path, node.size)
 		if node.damage < rule.resistance:
-			break
+			continue
 		var surplus: float = node.damage - rule.resistance
 		res.broke.append(node.size)
 
@@ -84,30 +92,67 @@ static func apply(root: BlockNode, template: BlockTemplate, local: Vector2i, hp:
 		if rule.on_break == Rule.OnBreak.MINE or node.size == 1:
 			res.mined = true
 			if rule.drop != null:
-				res.yields.append(Yield.new(rule.drop, rule.drop.count_from(node.size), origin, node.size))
-			if parent == null:
+				res.yields.append(Yield.new(rule.drop, rule.drop.count_from(node.size),
+					site.origin, node.size))
+			if site.parent == null:
 				res.block_destroyed = true
 			else:
-				parent.children[quad] = null  # parent kept: it holds persisted `revealed`
-			break
-
-		node.subdivide()
-		if not rule.pass_down:
-			break  # surplus discarded: each level is a fresh wall (GDD 3.2)
-		var carried: float = surplus * rule.pass_down_falloff
-		if carried <= 0.0:
-			break
-
-		var next_q: int = Quad.index_of(local, origin, node.size)
-		origin = Quad.child_origin(next_q, origin, node.size)
-		parent = node
-		quad = next_q
-		path = path.duplicate()
-		path.append(next_q)
-		node = parent.children[next_q]
-		incoming = carried
+				site.parent.children[site.quad] = null  # parent kept: it holds persisted `revealed`
+		else:
+			node.subdivide()
+			if rule.pass_down:
+				var carried: float = surplus * rule.pass_down_falloff
+				if carried > 0.0:
+					queue.append([_toward(local, site), carried])
+			# pass_down false discards the surplus down the tree: each level is
+			# a fresh wall (GDD 3.2). It may still travel sideways.
+		_spread(queue, root, site, rule, surplus, blow)
 
 	return res
+
+## The blow's point, pulled inside a node the wave has reached sideways, so
+## every node passes its surplus down toward the impact rather than nowhere.
+static func _toward(local: Vector2i, site: Site) -> Vector2i:
+	var span: Vector2i = Vector2i.ONE * (site.node.size - 1)
+	return local.clamp(site.origin, site.origin + span)
+
+## The surplus of a broken node -- mined or subdivided -- travelling to what
+## is around it (GDD 3.2). Directions are spatial: one node-width out, resolved
+## against whatever owns that point, so the wave crosses parents instead of
+## being trapped among four siblings. Each neighbour is sent a copy, never a
+## share: falloff is the only damping, and the diagonals are one step further.
+static func _spread(queue: Array[Array], root: BlockNode, site: Site, rule: Rule,
+		surplus: float, blow: Vector2i) -> void:
+	var carried: float = surplus * rule.pass_through_falloff
+	if rule.pass_through == Rule.PassThrough.NONE or carried <= 0.0:
+		return
+	var size: int = site.node.size
+	var mid: Vector2i = site.origin + Vector2i.ONE * (size >> 1)
+	var bounds := Rect2i(Vector2i.ZERO, Vector2i(root.size, root.size))
+	for d: Vector2i in _pattern(rule.pass_through, blow):
+		var at: Vector2i = mid + d * size
+		if not bounds.has_point(at):
+			continue  # a block never spreads into its neighbours (GDD 2)
+		var hp: float = carried * (rule.pass_through_falloff if d.x != 0 and d.y != 0 else 1.0)
+		if hp > 0.0:
+			queue.append([at, hp])
+
+## Which way a pattern sends the surplus (GDD 3.2).
+static func _pattern(pattern: Rule.PassThrough, blow: Vector2i) -> Array[Vector2i]:
+	match pattern:
+		Rule.PassThrough.INLINE:
+			var axis: Vector2i = Vector2i(signi(blow.x), 0) if blow.x != 0 				else Vector2i(0, signi(blow.y))
+			if axis == Vector2i.ZERO:
+				axis = Vector2i.RIGHT  # blow unknown: the grain runs across
+			return [axis, -axis] as Array[Vector2i]
+		Rule.PassThrough.LATERAL:
+			return [Vector2i.LEFT, Vector2i.RIGHT] as Array[Vector2i]
+		Rule.PassThrough.DOWNWARD:
+			return [Vector2i.DOWN] as Array[Vector2i]
+		Rule.PassThrough.RADIAL:
+			return [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT,
+				Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(1, 1)] as Array[Vector2i]
+	return [] as Array[Vector2i]
 
 ## Reveals the node struck and any sibling sharing its rule (GDD 5.1).
 static func _reveal(node: BlockNode, parent: BlockNode, path: Array[int], template: BlockTemplate) -> void:

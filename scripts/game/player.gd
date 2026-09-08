@@ -183,7 +183,7 @@ func _strike(dir: Vector2i) -> void:
 	var at: Vector2i = targets[_scan_i % targets.size()]
 	_scan_i += 1
 	strikes += 1
-	var dig: World.Dig = world.strike(at, tool_hp)
+	var dig: World.Dig = world.strike(at, tool_hp, dir)
 	_impact = at
 	_impact_age = 0.0
 	if dig.hit():
