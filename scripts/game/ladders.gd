@@ -15,6 +15,15 @@ func overlapping(r: Rect2i) -> Rect2i:
 func overlaps(r: Rect2i) -> bool:
 	return overlapping(r).size != Vector2i.ZERO
 
+## Is `r` resting exactly on a ladder's top row? The top of a ladder is
+## climbable ground, so the character tops out level with the terrain beside
+## it instead of one atom low (GDD 6.2).
+func tops(r: Rect2i) -> bool:
+	for u: Rect2i in units:
+		if r.end.y == u.position.y and r.end.x > u.position.x and r.position.x < u.end.x:
+			return true
+	return false
+
 ## Place a unit for a character whose box is `body`. If the body overlaps a
 ## ladder, the new unit snaps to that ladder's column and stacks directly
 ## above or below it (whichever side the body's centre is on), so ladders

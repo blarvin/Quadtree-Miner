@@ -48,10 +48,11 @@ func _draw() -> void:
 			continue
 		var t: BlockTemplate = world.template_for(b)
 		var path: Array[int] = []
-		_draw_node(b.root, Vector2(b.origin), t, path)
-		draw_rect(r, class_colors[t.colour_class].darkened(border_darken), false, -1.0)
+		_draw_node(b.root, Vector2(b.origin), t, path, r,
+			class_colors[t.colour_class].darkened(border_darken))
 
-func _draw_node(node: BlockNode, origin: Vector2, t: BlockTemplate, path: Array[int]) -> void:
+func _draw_node(node: BlockNode, origin: Vector2, t: BlockTemplate, path: Array[int],
+		bounds: Rect2, border: Color) -> void:
 	var s: float = float(node.size)
 	var r := Rect2(origin, Vector2(s, s))
 	if node.is_leaf():
@@ -60,6 +61,7 @@ func _draw_node(node: BlockNode, origin: Vector2, t: BlockTemplate, path: Array[
 		if node.revealed:
 			fill = material_colors[rule.apparent_material(t.material)]
 		draw_rect(r, fill, true)
+		_outline(r, bounds, border)
 		if node.revealed and node.size > 1 and rule.on_break == Rule.OnBreak.SUBDIVIDE:
 			_promise(r, node, rule, t)
 		return
@@ -69,8 +71,38 @@ func _draw_node(node: BlockNode, origin: Vector2, t: BlockTemplate, path: Array[
 			continue
 		var child_path: Array[int] = path.duplicate()
 		child_path.append(q)
-		_draw_node(child, Vector2(Quad.child_origin(q, Vector2i(origin), node.size)), t, child_path)
-	_cross(r, crack_color)
+		_draw_node(child, Vector2(Quad.child_origin(q, Vector2i(origin), node.size)), t,
+			child_path, bounds, border)
+	_fracture(r, node, crack_color)
+
+## The block border, drawn by the leaves that still reach it: a mined-out
+## quadrant leaves no line behind on the void (GDD 2).
+func _outline(r: Rect2, bounds: Rect2, c: Color) -> void:
+	if is_equal_approx(r.position.x, bounds.position.x):
+		draw_line(r.position, Vector2(r.position.x, r.end.y), c, -1.0)
+	if is_equal_approx(r.end.x, bounds.end.x):
+		draw_line(Vector2(r.end.x, r.position.y), r.end, c, -1.0)
+	if is_equal_approx(r.position.y, bounds.position.y):
+		draw_line(r.position, Vector2(r.end.x, r.position.y), c, -1.0)
+	if is_equal_approx(r.end.y, bounds.end.y):
+		draw_line(Vector2(r.position.x, r.end.y), r.end, c, -1.0)
+
+## The cross of a subdivided node: only the arms that still bound a live
+## child. An arm between two mined-out quadrants would be a line in void
+## (GDD 5.2).
+func _fracture(r: Rect2, node: BlockNode, c: Color) -> void:
+	var mid: Vector2 = r.get_center()
+	var live: Array[bool] = []
+	for q: int in 4:
+		live.append(node.children[q] != null)
+	if live[0] or live[1]:
+		draw_line(Vector2(mid.x, r.position.y), mid, c, -1.0)
+	if live[2] or live[3]:
+		draw_line(mid, Vector2(mid.x, r.end.y), c, -1.0)
+	if live[0] or live[2]:
+		draw_line(Vector2(r.position.x, mid.y), mid, c, -1.0)
+	if live[1] or live[3]:
+		draw_line(mid, Vector2(r.end.x, mid.y), c, -1.0)
 
 ## The cross a revealed leaf would subdivide into, inked as far as its damage
 ## has carried it: extent = tell x damage / resistance (GDD 5.3). Arms grow

@@ -21,6 +21,9 @@ extends Node2D
 @export var reach: int = 1             ## atoms past the box edge the tool line is drawn
 @export var scan_reverse: bool = false ## bottom-to-top / right-to-left instead
 @export var scan_restart_on_turn: bool = true
+## A turn stands on its own: after facing changes, digging waits this long
+## unless the same direction is tapped again (GDD 6.1).
+@export var turn_delay: float = 0.2
 @export var tool_color: Color = Color(0.9, 0.9, 1.0)
 @export var tool_width: float = 0.5    ## atoms
 @export var impact_color: Color = Color(1.0, 0.85, 0.2)
@@ -39,6 +42,7 @@ var _fall_t: float = 0.0
 var _scan_i: int = 0
 var _impact: Vector2i = Vector2i.ZERO
 var _impact_age: float = 1e9
+var _turn_grace: float = 0.0
 var _held: Array[Vector2i] = []        ## most recently pressed last
 
 const DIRS: Dictionary = {
@@ -53,13 +57,19 @@ func centre() -> Vector2:
 	return Vector2(box) + Vector2(size, size) * 0.5
 
 func on_ladder() -> bool:
-	return ladders.overlaps(rect())
+	return _laddered(rect())
+
+## The ladder holds a box that overlaps it and one that sits exactly on its
+## top row, so topping out lands level with the terrain beside it (GDD 6.2).
+func _laddered(r: Rect2i) -> bool:
+	return ladders.overlaps(r) or ladders.tops(r)
 
 func standing() -> bool:
 	return _any_solid(_edge(Vector2i.DOWN))
 
 func _process(delta: float) -> void:
 	_impact_age += delta
+	_turn_grace = maxf(0.0, _turn_grace - delta)
 	var dir: Vector2i = _held_dir()
 	if dir == Vector2i.ZERO:
 		_move_t = 0.0
@@ -67,14 +77,17 @@ func _process(delta: float) -> void:
 	else:
 		if dir != facing:
 			facing = dir
+			_turn_grace = turn_delay
+			_strike_t = 1.0 / strike_rate  # so the first strike lands at expiry
 			if scan_restart_on_turn:
 				_scan_i = 0
 		if _blocked(dir):
 			_move_t = 0.0
-			_strike_t += delta
-			while _strike_t >= 1.0 / strike_rate:
-				_strike_t -= 1.0 / strike_rate
-				_strike(dir)
+			if _turn_grace <= 0.0:
+				_strike_t += delta
+				while _strike_t >= 1.0 / strike_rate:
+					_strike_t -= 1.0 / strike_rate
+					_strike(dir)
 		elif _may_step(dir):
 			_strike_t = 0.0
 			var speed: float = climb_speed if dir.y != 0 and on_ladder() else walk_speed
@@ -106,6 +119,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			# A tap acts immediately; holding continues at the rate.
 			_move_t = 1.0 / walk_speed
 			_strike_t = 1.0 / strike_rate
+			# Tapping the way you already face confirms the dig (GDD 6.1).
+			if DIRS[action] == facing:
+				_turn_grace = 0.0
 		elif event.is_action_released(action):
 			_held.erase(DIRS[action])
 
@@ -142,7 +158,7 @@ func _blocked(dir: Vector2i) -> bool:
 func _may_step(dir: Vector2i) -> bool:
 	var dest := Rect2i(box + dir, Vector2i(size, size))
 	if dir == Vector2i.UP:
-		return on_ladder() and ladders.overlaps(dest)
+		return on_ladder() and _laddered(dest)
 	if dir == Vector2i.DOWN:
 		return on_ladder()
 	return air_control or standing() or on_ladder()

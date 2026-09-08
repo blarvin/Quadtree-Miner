@@ -22,6 +22,10 @@ var world: World = null
 var ladders := Ladders.new()
 
 func _ready() -> void:
+	# Run after Stage/Player, so the camera follows the box the player moved
+	# to this frame rather than last frame's -- otherwise the character jitters
+	# a step forward and back along its line of motion.
+	process_priority = 1
 	var errors: PackedStringArray = []
 	var templates: Dictionary = TemplateLoader.load_dir(template_dir, errors)
 	# The painted map wins when it exists: free placement cannot be written

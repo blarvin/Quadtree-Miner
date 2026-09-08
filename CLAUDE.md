@@ -11,6 +11,14 @@ relevant section before changing anything in `scripts/core/`.
 - Engine binary: `C:\Users\blarv\Desktop\GODOT\Godot_v4.7.2-stable_win64.exe`
   (use `..._console.exe` for headless — it writes to stdout).
 
+## Code search
+
+**Use the jcodemunch MCP tools instead of Grep/Read/Glob for this repo.** Call
+`jcodemunch_guide` first and follow its instructions strictly — it ships the
+version-current policy, so do not work from a pasted copy of it. This path is
+not indexed yet: `index_folder` it once, then `search_symbols` /
+`get_context_bundle` / `search_text` in place of a grep sweep.
+
 ## Commands
 
 ```bash
