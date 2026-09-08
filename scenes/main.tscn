@@ -20,7 +20,10 @@ script = ExtResource("3_ladders")
 
 [node name="Player" type="Node2D" parent="Stage" unique_id=1125243886]
 script = ExtResource("4_player")
-strike_rate = 12.0
+strike_rate = 7.0
+scan_reverse = true
+tool_recoil = 2.0
+tool_recoil_time = 0.05
 
 [node name="Editor" type="Node2D" parent="Stage" unique_id=1299771500]
 script = ExtResource("5_editor")

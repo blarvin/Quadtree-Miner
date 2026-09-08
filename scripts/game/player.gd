@@ -28,6 +28,10 @@ extends Node2D
 @export var tool_width: float = 0.5    ## atoms
 @export var impact_color: Color = Color(1.0, 0.85, 0.2)
 @export var impact_fade: float = 0.3   ## seconds
+## The bit kicks along its own axis after each hit: out on the blow, back
+## past rest, home. Amplitude in atoms (3 framebuffer px each).
+@export var tool_recoil: float = 1.0
+@export var tool_recoil_time: float = 0.08  ## seconds for one kick
 
 var world: World = null
 var ladders: Ladders = null
@@ -163,12 +167,17 @@ func _may_step(dir: Vector2i) -> bool:
 		return on_ladder()
 	return air_control or standing() or on_ladder()
 
-## One strike at one atom: the next obstructing atom in the scan cycle.
-func _strike(dir: Vector2i) -> void:
-	var targets: Array[Vector2i] = []
+## The obstructing atoms on side `dir`, in scan order (GDD 6.1).
+func _targets(dir: Vector2i) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
 	for a: Vector2i in _edge(dir):
 		if world.in_bounds(a) and world.is_solid(a):
-			targets.append(a)
+			out.append(a)
+	return out
+
+## One strike at one atom: the next obstructing atom in the scan cycle.
+func _strike(dir: Vector2i) -> void:
+	var targets: Array[Vector2i] = _targets(dir)
 	if targets.is_empty():
 		return
 	var at: Vector2i = targets[_scan_i % targets.size()]
@@ -185,8 +194,30 @@ func _strike(dir: Vector2i) -> void:
 func _draw() -> void:
 	var c := Vector2(size, size) * 0.5
 	draw_circle(c, radius, body_color)
-	draw_line(c, c + Vector2(facing) * (radius + float(reach)), tool_color, tool_width)
+	_draw_tool(c)
 	if _impact_age < impact_fade:
 		var col: Color = impact_color
 		col.a = 1.0 - _impact_age / impact_fade
 		draw_rect(Rect2(Vector2(_impact - box), Vector2.ONE), col, true)
+
+## The tool aims at the atom the next strike will take -- the same scan cycle
+## the blow uses (GDD 6.1), so the cross-section being worked is visible --
+## and kicks along that axis for each hit.
+func _draw_tool(c: Vector2) -> void:
+	var axis := Vector2(facing)
+	if world != null:
+		var targets: Array[Vector2i] = _targets(facing)
+		if not targets.is_empty():
+			var at: Vector2i = targets[_scan_i % targets.size()]
+			var to_atom: Vector2 = Vector2(at - box) + Vector2(0.5, 0.5) - c
+			if to_atom.length_squared() > 0.0:
+				axis = to_atom.normalized()
+	draw_line(c, c + axis * (radius + float(reach) + _kick()), tool_color, tool_width)
+
+## Out on the blow, back past rest, home: a damped cosine over one recoil.
+## `_impact_age` is the time since the last strike.
+func _kick() -> float:
+	if tool_recoil_time <= 0.0 or _impact_age >= tool_recoil_time:
+		return 0.0
+	var phase: float = _impact_age / tool_recoil_time
+	return cos(TAU * phase) * (1.0 - phase) * tool_recoil
