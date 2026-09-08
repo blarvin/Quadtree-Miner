@@ -24,7 +24,8 @@ func _dig(root: BlockNode, t: BlockTemplate, at: Vector2i, n: int) -> Strike.Res
 	return res
 
 func test_every_template_binds_at_16_and_4() -> void:
-	for id: String in ["honest_dirt", "liar_dirt", "stone", "gift_stone", "sand", "hard_stone"]:
+	for id: String in ["honest_dirt", "liar_dirt", "stone", "gift_stone", "sand", "hard_stone",
+			"firm_sand"]:
 		var t: BlockTemplate = _tpl(id)
 		runner.check(t.validate_for_root_size(16).is_empty(), "%s at 16" % id)
 		runner.check(t.validate_for_root_size(4).is_empty(), "%s at 4" % id)
@@ -81,6 +82,32 @@ func _standing(root: BlockNode) -> int:
 			if Strike.site_at(root, Vector2i(x, y)).node != null:
 				n += 1
 	return n
+
+func test_firm_sand_caves_in_and_stands() -> void:
+	var t: BlockTemplate = _tpl("firm_sand")
+	var root := BlockNode.new(16)
+	Strike.apply(root, t, Vector2i(8, 8), 1.0)
+	runner.check_eq(_standing(root), 256, "shatters whole, like sand")
+	Strike.apply(root, t, Vector2i(8, 8), 1.0)
+	var left: int = _standing(root)
+	# 0.15 a grain against sand's 0.05: six hops of reach instead of twenty.
+	runner.check(left > 100 and left < 200, "and the collapse stops, %d of 256 left" % left)
+
+func test_gravel_shatters_to_lumps_and_leaves_the_stubborn_ones() -> void:
+	var t: BlockTemplate = _tpl("gravel")
+	var root := BlockNode.new(16)
+	Strike.apply(root, t, Vector2i(8, 8), 1.0)
+	runner.check_eq(root.node_count(), 85, "shatters to 64 size-2 lumps, not to grains")
+	runner.check_eq(_standing(root), 256, "every one of them standing")
+	Strike.apply(root, t, Vector2i(12, 4), 1.0)  # beside the stubborn Q1.Q1 lump
+	runner.check(Strike.site_at(root, Vector2i(13, 5)).node == null, "the collapse took the cells around it")
+	runner.check(Strike.site_at(root, Vector2i(13, 1)).node != null,
+		"but the lump rode it out: the leftovers are the tell")
+
+func test_gravel_is_authored_for_one_root_size() -> void:
+	var t: BlockTemplate = _tpl("gravel")
+	runner.check(t.validate_for_root_size(16).is_empty(), "its cell paths reach size 2 under a size-16 root")
+	runner.check(not t.validate_for_root_size(4).is_empty(), "and are deeper than the atom under a size-4 one")
 
 func test_the_boulder_cracks_once_and_goes_terminal() -> void:
 	var t: BlockTemplate = _tpl("hard_stone")

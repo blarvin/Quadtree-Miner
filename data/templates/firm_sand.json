@@ -1,0 +1,19 @@
+{
+  "_": "Sand that does not take the room with it (GDD 4.4). One number apart from sand: a grain resists 0.15 instead of 0.05, so the collapse reaches 6 hops instead of 20 and stops. The block shatters whole, then caves in around the blow and stands.",
+  "material": "sand",
+  "display_skin": "sand_firm",
+  "authored_size": 16,
+  "default_rule": {
+    "resistance": 1.0,
+    "on_break": "shatter",
+    "drop": null
+  },
+  "overrides": {
+    "size:1": {
+      "resistance": 0.15,
+      "on_break": "mine",
+      "pass_through": "radial",
+      "pass_through_falloff": 1.0
+    }
+  }
+}

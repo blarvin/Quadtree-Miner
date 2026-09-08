@@ -1,0 +1,23 @@
+{
+  "_": "Loose stone (GDD 4.4). Shatters to 64 size-2 lumps, not to grains, so the collapse travels in cells and the hole it leaves is coarse. The size key is the physics; the paths are the contents (GDD 4.4): four stubborn cells and one size-4 lump ride out the first collapse and stand there afterwards, which is the only tell gravel has.",
+  "material": "stone",
+  "display_skin": "gravel_loose",
+  "authored_size": 16,
+  "default_rule": {
+    "resistance": 1.0,
+    "on_break": "shatter",
+    "drop": null
+  },
+  "overrides": {
+    "size:2": {
+      "resistance": 0.3,
+      "on_break": "mine",
+      "pass_through": "radial",
+      "pass_through_falloff": 1.0
+    },
+    "Q1.Q1": { "resistance": 1.0 },
+    "Q0.Q3.Q3": { "resistance": 2.0 },
+    "Q2.Q1.Q0": { "resistance": 2.0 },
+    "Q3.Q0.Q1": { "resistance": 2.0 }
+  }
+}

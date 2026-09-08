@@ -115,7 +115,12 @@ tools are tools with HP 1.
 
   Each neighbour is sent a **copy** of the surplus, never a share, so a
   pattern's reach does not depend on how many neighbours happen to exist and
-  `falloff` is the only damping. A node takes one delivery per strike and
+  `falloff` is the only damping. At `falloff: 1` a hop costs exactly the
+  target's `resistance`, so a collapse reaches `hp / resistance` hops and
+  clears a **square** — a diagonal costs no more than a step. Below 1 the
+  diagonals pay twice and the hole rounds off. **Reach is the authoring
+  dial**: one number decides whether a collapse takes the block or craters
+  it. A node takes one delivery per strike and
   breaks at most once, so the block's own node count bounds the wave — it
   needs no iteration cap.
 
@@ -226,13 +231,16 @@ differently.
 
 Each level of depth roughly quadruples the cost of clearing, because there are
 four times as many nodes to break. Strikes with a 1 HP tool to empty one
-size-16 block, against strikes to cut an 8-atom corridor through it:
+size-16 block, against strikes to cut an 8-atom corridor through it. This is
+the full inventory; §4.3 describes only the six the spec started with:
 
 | Template | Floor | Clear | Tunnel |
 | --- | --- | --- | --- |
 | `easy_dirt` | root | 3 | 3 |
 | `sand` | 1 | 2 | 2 |
 | `mid_dirt` | 8 | 5 | 3 |
+| `firm_sand` | 1 | 7 | 4 |
+| `gravel` | 2 | 14 | 10 top, 8 bottom |
 | `honest_dirt` | 2 | 86 | 44 |
 | `hard_stone` | 8 | 100 | 60 |
 | `stone` | 2 | 171 | 87 |
@@ -243,6 +251,21 @@ whole to gone, wherever they land, and neither of them is a dig. It is the
 only material whose price does not scale with what you want from it — and
 the only one that cannot be tunnelled *because* it is cheap, since the second
 strike takes the room with it whether or not that is what you wanted.
+
+`firm_sand` is `sand` with one number changed — a grain resists 0.15 instead
+of 0.05 — and it is a different material to be in: the block still shatters
+whole, but the collapse stops six hops out and leaves an eleven-atom room
+with the rind standing. The difference is a **silhouette, not a clock**,
+which is the only kind of difference that earns a second template.
+
+`gravel` is the seam made concrete. Its `size:2` key is physics — shatter to
+64 lumps, collapse at 0.3 a cell — and four quad-paths are contents: three
+stubborn cells and one size-4 lump that ride out a collapse and stand in the
+crater afterwards. Nothing announces them; they are terminal, so they have no
+fracture to show. **The leftovers are the tell**, which is the honest way for
+a material to be heterogeneous — you learn gravel by seeing what it leaves,
+not by being told. It is also why gravel's tunnel cost differs top from
+bottom: the lumps are not evenly spread, so where you cut matters.
 
 Two readings. First, the range is two orders of magnitude, and it is bought
 almost entirely with depth: `stone` and `honest_dirt` differ by 2× in
